@@ -6,6 +6,7 @@ import app.revanced.patcher.patch.BytecodePatchBuilder
 import app.revanced.patcher.patch.BytecodePatchContext
 import app.revanced.patcher.patch.bytecodePatch
 import app.revanced.patches.all.misc.resources.addResources
+import app.revanced.patches.all.misc.resources.addResourcesPatch
 
 private const val EXTENSION_CLASS_DESCRIPTOR =
     "Lapp/revanced/extension/shared/patches/CheckWatchHistoryDomainNameResolutionPatch;"
@@ -22,6 +23,8 @@ internal fun checkWatchHistoryDomainNameResolutionPatch(
     description = "Checks if the device DNS server is preventing user watch history from being saved.",
 ) {
     block()
+
+    dependsOn(addResourcesPatch)
 
     apply {
         executeBlock()
