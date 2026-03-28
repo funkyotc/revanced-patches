@@ -27,8 +27,3 @@ internal val BytecodePatchContext.profileUrlResponseJsonParserMethodMatch by com
     name("unsafeParseFromJson")
     instructions("profile_to_share_url"())
 }
-
-internal val BytecodePatchContext.liveUrlResponseJsonParserMethodMatch by composingFirstMethod {
-    name("unsafeParseFromJson")
-    instructions("live_to_share_url"())
-}

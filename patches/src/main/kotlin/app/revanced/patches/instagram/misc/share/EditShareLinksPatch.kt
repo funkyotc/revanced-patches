@@ -12,7 +12,6 @@ internal fun BytecodePatchContext.editShareLinksPatch(block: MutableMethod.(inde
         permalinkResponseJsonParserMethodMatch,
         storyUrlResponseJsonParserMethodMatch,
         profileUrlResponseJsonParserMethodMatch,
-        liveUrlResponseJsonParserMethodMatch,
     )
 
     methodsToPatch.forEach { match ->
