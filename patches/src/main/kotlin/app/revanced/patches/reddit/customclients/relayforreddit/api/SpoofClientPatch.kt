@@ -1,5 +1,7 @@
 package app.revanced.patches.reddit.customclients.relayforreddit.api
 
+import app.revanced.patcher.CompositeMatch
+import app.revanced.patcher.extensions.addInstructions
 import app.revanced.patcher.extensions.getInstruction
 import app.revanced.patcher.extensions.replaceInstruction
 import app.revanced.patches.reddit.customclients.spoofClientPatch
@@ -11,16 +13,26 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21t
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 
 @Suppress("unused")
-val spoofClientPatch = spoofClientPatch(redirectUri = "dbrady://relay") { clientIdOption ->
+val spoofClientPatch = spoofClientPatch { clientIdOption, redirectUriOption, userAgentOption ->
     compatibleWith(
         "free.reddit.news",
         "reddit.news",
     )
 
     val clientId by clientIdOption
+    val redirectUri by redirectUriOption
+    val userAgent by userAgentOption
 
     apply {
-        // region Patch client id.
+        fun CompositeMatch.patch(
+            string: String,
+            getReplacementIndex: List<Int>.() -> Int,
+        ) = method.apply {
+            val replacementIndex = indices[0].getReplacementIndex()
+            val stringRegister = getInstruction<OneRegisterInstruction>(replacementIndex).registerA
+
+            replaceInstruction(replacementIndex, "const-string v$stringRegister, \"$string\"")
+        }
 
         listOf(
             loginActivityClientIdMethodMatch,
@@ -28,15 +40,39 @@ val spoofClientPatch = spoofClientPatch(redirectUri = "dbrady://relay") { client
             getLoggedOutBearerTokenMethodMatch,
             getRefreshTokenMethodMatch,
         ).forEach { match ->
-            val clientIdIndex = match[0]
-            val clientIdRegister = match.method.getInstruction<OneRegisterInstruction>(clientIdIndex).registerA
-
-            match.method.replaceInstruction(clientIdIndex, "const-string v$clientIdRegister, \"$clientId\"")
+            match.patch(clientId!!) { first() }
         }
 
-        // endregion
+        if (redirectUri != null) {
+            setOf(
+                loginActivityRedirectUriMethodMatch,
+                shouldOverrideUrlLoadingRedirectUriMethodMatch,
+                redditAccountManagerRedirectUriMethodMatch
+            ).forEach { match ->
+                match.patch(redirectUri!!) { last() }
+            }
+        }
 
-        // region Patch miscellaneous.
+        if (userAgent != null) {
+            networkModuleUserAgentMethodMatch.let {
+                it.method.apply {
+                    val index = it[0]
+                    val register = getInstruction<OneRegisterInstruction>(index).registerA
+
+                    val userAgentField = it.classDef.fields.first { field ->
+                        field.type == "Ljava/lang/String;"
+                    }
+
+                    addInstructions(
+                        index,
+                        """
+                            const-string v$register, "$userAgent"
+                            sput-object v$register, $userAgentField
+                        """
+                    )
+                }
+            }
+        }
 
         // Do not load remote config which disables OAuth login remotely.
         setRemoteConfigMethod.returnEarly()
@@ -44,10 +80,12 @@ val spoofClientPatch = spoofClientPatch(redirectUri = "dbrady://relay") { client
         // Prevent OAuth login being disabled remotely.
         redditCheckDisableAPIMethod.apply {
             val checkIsOAuthRequestIndex = indexOfFirstInstructionOrThrow(Opcode.IF_EQZ)
-            val returnNextChain = getInstruction<BuilderInstruction21t>(checkIsOAuthRequestIndex).target
-            replaceInstruction(checkIsOAuthRequestIndex, BuilderInstruction10t(Opcode.GOTO, returnNextChain))
+            val returnNextChain =
+                getInstruction<BuilderInstruction21t>(checkIsOAuthRequestIndex).target
+            replaceInstruction(
+                checkIsOAuthRequestIndex,
+                BuilderInstruction10t(Opcode.GOTO, returnNextChain)
+            )
         }
-
-        // endregion
     }
 }

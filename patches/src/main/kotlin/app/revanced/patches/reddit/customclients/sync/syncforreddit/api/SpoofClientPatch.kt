@@ -8,12 +8,10 @@ import app.revanced.patches.reddit.customclients.sync.detection.piracy.disablePi
 import app.revanced.patches.shared.misc.string.replaceStringPatch
 import app.revanced.util.returnEarly
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
-import java.util.*
+import java.util.Base64
 
 @Suppress("unused")
-val spoofClientPatch = spoofClientPatch(
-    redirectUri = "http://redditsync/auth",
-) { clientIdOption ->
+val spoofClientPatch = spoofClientPatch { clientIdOption, redirectUriOption, userAgentOption ->
     dependsOn(
         disablePiracyDetectionPatch,
         // Redirects from SSL to WWW domain are bugged causing auth problems.
@@ -28,10 +26,10 @@ val spoofClientPatch = spoofClientPatch(
     )
 
     val clientId by clientIdOption
+    val redirectUri by redirectUriOption
+    val userAgent by userAgentOption
 
     apply {
-        // region Patch client id.
-
         getAuthorizationStringMethodMatch.immutableClassDef.getBearerTokenMethodMatch.method.apply {
             val auth = Base64.getEncoder().encodeToString("$clientId:".toByteArray(Charsets.UTF_8))
             returnEarly("Basic $auth")
@@ -39,13 +37,15 @@ val spoofClientPatch = spoofClientPatch(
             val occurrenceIndex = getAuthorizationStringMethodMatch[0]
 
             getAuthorizationStringMethodMatch.method.apply {
-                val authorizationStringInstruction = getInstruction<OneRegisterInstruction>(occurrenceIndex)
+                val authorizationStringInstruction =
+                    getInstruction<OneRegisterInstruction>(occurrenceIndex)
                 val targetRegister = authorizationStringInstruction.registerA
 
-                val newAuthorizationUrl = authorizationStringInstruction.stringReference!!.string.replace(
-                    "client_id=.*?&".toRegex(),
-                    "client_id=$clientId&",
-                )
+                val newAuthorizationUrl =
+                    authorizationStringInstruction.stringReference!!.string.replace(
+                        "client_id=.*?&".toRegex(),
+                        "client_id=$clientId&",
+                    )
 
                 replaceInstruction(
                     occurrenceIndex,
@@ -54,26 +54,18 @@ val spoofClientPatch = spoofClientPatch(
             }
         }
 
-        // endregion
+        if (redirectUri != null) getRedirectUriMethod.returnEarly(redirectUri!!)
 
-        // region Patch user agent.
+        if (userAgent != null) getUserAgentMethod.returnEarly(userAgent!!)
 
-        // Use a random user agent.
-        val randomName = (0..100000).random()
-        val userAgent = "$randomName:app.revanced.$randomName:v1.0.0 (by /u/revanced)"
+        imgurImageAPIMethodMatch.let {
+            val apiUrlIndex = it[0]
 
-        getUserAgentMethod.returnEarly(userAgent)
+            it.method.replaceInstruction(
+                apiUrlIndex,
+                "const-string v1, \"https://api.imgur.com/3/image\"",
+            )
+        }
 
-        // endregion
-
-        // region Patch Imgur API URL.
-
-        val apiUrlIndex = imgurImageAPIMethodMatch[0]
-        imgurImageAPIMethodMatch.method.replaceInstruction(
-            apiUrlIndex,
-            "const-string v1, \"https://api.imgur.com/3/image\"",
-        )
-
-        // endregion
     }
 }

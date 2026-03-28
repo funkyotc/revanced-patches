@@ -5,31 +5,75 @@ import app.revanced.com.android.tools.smali.dexlib2.mutable.MutableField
 import app.revanced.com.android.tools.smali.dexlib2.mutable.MutableField.Companion.toMutable
 import app.revanced.com.android.tools.smali.dexlib2.mutable.MutableMethod
 import app.revanced.com.android.tools.smali.dexlib2.mutable.MutableMethod.Companion.toMutable
-import app.revanced.patcher.*
-import app.revanced.patcher.extensions.*
+import app.revanced.patcher.MutablePredicateList
+import app.revanced.patcher.classDef
+import app.revanced.patcher.custom
+import app.revanced.patcher.extensions.ExternalLabel
+import app.revanced.patcher.extensions.addInstruction
+import app.revanced.patcher.extensions.addInstructions
+import app.revanced.patcher.extensions.addInstructionsWithLabels
+import app.revanced.patcher.extensions.fieldReference
+import app.revanced.patcher.extensions.getInstruction
+import app.revanced.patcher.extensions.instructions
+import app.revanced.patcher.extensions.instructionsOrNull
+import app.revanced.patcher.extensions.methodReference
+import app.revanced.patcher.extensions.removeInstruction
+import app.revanced.patcher.extensions.stringReference
+import app.revanced.patcher.firstClassDef
+import app.revanced.patcher.firstClassDefOrNull
+import app.revanced.patcher.firstMethod
+import app.revanced.patcher.immutableClassDef
 import app.revanced.patcher.patch.BytecodePatchContext
 import app.revanced.patcher.patch.PatchException
 import app.revanced.patches.shared.misc.mapping.ResourceType
 import app.revanced.patches.shared.misc.mapping.resourceMappingPatch
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
-import com.android.tools.smali.dexlib2.Opcode.*
+import com.android.tools.smali.dexlib2.Opcode.MOVE_RESULT
+import com.android.tools.smali.dexlib2.Opcode.MOVE_RESULT_OBJECT
+import com.android.tools.smali.dexlib2.Opcode.MOVE_RESULT_WIDE
+import com.android.tools.smali.dexlib2.Opcode.RETURN
+import com.android.tools.smali.dexlib2.Opcode.RETURN_OBJECT
+import com.android.tools.smali.dexlib2.Opcode.RETURN_WIDE
 import com.android.tools.smali.dexlib2.analysis.reflection.util.ReflectionUtils
 import com.android.tools.smali.dexlib2.formatter.DexFormatter
 import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.Method
 import com.android.tools.smali.dexlib2.iface.MethodParameter
-import com.android.tools.smali.dexlib2.iface.instruction.*
+import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.Instruction
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.WideLiteralInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.Reference
-import com.android.tools.smali.dexlib2.iface.value.*
+import com.android.tools.smali.dexlib2.iface.value.BooleanEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.ByteEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.CharEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.DoubleEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.EncodedValue
+import com.android.tools.smali.dexlib2.iface.value.FloatEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.IntEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.LongEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.NullEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.ShortEncodedValue
+import com.android.tools.smali.dexlib2.iface.value.StringEncodedValue
 import com.android.tools.smali.dexlib2.immutable.ImmutableField
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethod
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation
-import com.android.tools.smali.dexlib2.immutable.value.*
-import java.util.*
-import kotlin.apply
-import kotlin.collections.remove
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableBooleanEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableByteEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableCharEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableDoubleEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableFloatEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableIntEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableLongEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableNullEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableShortEncodedValue
+import com.android.tools.smali.dexlib2.immutable.value.ImmutableStringEncodedValue
+import java.util.ArrayDeque
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 /**
  * Find the instruction index used for a toString() StringBuilder write of a given String name.
@@ -233,7 +277,8 @@ fun Method.indexOfFirstLiteralInstructionOrThrow(literal: Long): Int {
  * @return the first literal instruction with the value, or -1 if not found.
  * @see indexOfFirstLiteralInstructionOrThrow
  */
-fun Method.indexOfFirstLiteralInstruction(literal: Float) = indexOfFirstLiteralInstruction(literal.toRawBits().toLong())
+fun Method.indexOfFirstLiteralInstruction(literal: Float) =
+    indexOfFirstLiteralInstruction(literal.toRawBits().toLong())
 
 /**
  * Find the index of the first literal instruction with the given float value,
@@ -253,7 +298,8 @@ fun Method.indexOfFirstLiteralInstructionOrThrow(literal: Float): Int {
  * @return the first literal instruction with the value, or -1 if not found.
  * @see indexOfFirstLiteralInstructionOrThrow
  */
-fun Method.indexOfFirstLiteralInstruction(literal: Double) = indexOfFirstLiteralInstruction(literal.toRawBits())
+fun Method.indexOfFirstLiteralInstruction(literal: Double) =
+    indexOfFirstLiteralInstruction(literal.toRawBits())
 
 /**
  * Find the index of the first literal instruction with the given double value,
@@ -352,7 +398,8 @@ fun Method.containsLiteralInstruction(literal: Float) = indexOfFirstLiteralInstr
  *
  * @return if the method contains a literal with the given value.
  */
-fun Method.containsLiteralInstruction(literal: Double) = indexOfFirstLiteralInstruction(literal) >= 0
+fun Method.containsLiteralInstruction(literal: Double) =
+    indexOfFirstLiteralInstruction(literal) >= 0
 
 /**
  * Traverse the class hierarchy starting from the given root class.
@@ -360,7 +407,10 @@ fun Method.containsLiteralInstruction(literal: Double) = indexOfFirstLiteralInst
  * @param targetClass the class to start traversing the class hierarchy from.
  * @param callback function that is called for every class in the hierarchy.
  */
-fun BytecodePatchContext.traverseClassHierarchy(targetClass: MutableClassDef, callback: MutableClassDef.() -> Unit) {
+fun BytecodePatchContext.traverseClassHierarchy(
+    targetClass: MutableClassDef,
+    callback: MutableClassDef.() -> Unit
+) {
     callback(targetClass)
 
     targetClass.superclass ?: return
@@ -380,13 +430,15 @@ fun BytecodePatchContext.traverseClassHierarchy(targetClass: MutableClassDef, ca
  */
 @Deprecated("Instead use `methodReference`, `fieldReference`, `typeReference` or `stringReference`")
 @Suppress("unused")
-inline fun <reified T : Reference> Instruction.getReference() = (this as? ReferenceInstruction)?.reference as? T
+inline fun <reified T : Reference> Instruction.getReference() =
+    (this as? ReferenceInstruction)?.reference as? T
 
 /**
  * @return The index of the first opcode specified, or -1 if not found.
  * @see indexOfFirstInstructionOrThrow
  */
-fun Method.indexOfFirstInstruction(targetOpcode: Opcode): Int = indexOfFirstInstruction(0, targetOpcode)
+fun Method.indexOfFirstInstruction(targetOpcode: Opcode): Int =
+    indexOfFirstInstruction(0, targetOpcode)
 
 /**
  * @param startIndex Optional starting index to start searching from.
@@ -424,7 +476,8 @@ fun Method.indexOfFirstInstruction(startIndex: Int = 0, filter: Instruction.() -
  * @throws PatchException
  * @see indexOfFirstInstruction
  */
-fun Method.indexOfFirstInstructionOrThrow(targetOpcode: Opcode): Int = indexOfFirstInstructionOrThrow(0, targetOpcode)
+fun Method.indexOfFirstInstructionOrThrow(targetOpcode: Opcode): Int =
+    indexOfFirstInstructionOrThrow(0, targetOpcode)
 
 /**
  * @return The index of the first opcode specified, starting from the index specified.
@@ -443,7 +496,10 @@ fun Method.indexOfFirstInstructionOrThrow(startIndex: Int = 0, targetOpcode: Opc
  * @throws PatchException
  * @see indexOfFirstInstruction
  */
-fun Method.indexOfFirstInstructionOrThrow(startIndex: Int = 0, filter: Instruction.() -> Boolean): Int {
+fun Method.indexOfFirstInstructionOrThrow(
+    startIndex: Int = 0,
+    filter: Instruction.() -> Boolean
+): Int {
     val index = indexOfFirstInstruction(startIndex, filter)
     if (index < 0) {
         throw PatchException("Could not find instruction index")
@@ -473,7 +529,10 @@ fun Method.indexOfFirstInstructionReversed(startIndex: Int? = null, targetOpcode
  * @return -1 if the instruction is not found.
  * @see indexOfFirstInstructionReversedOrThrow
  */
-fun Method.indexOfFirstInstructionReversed(startIndex: Int? = null, filter: Instruction.() -> Boolean): Int {
+fun Method.indexOfFirstInstructionReversed(
+    startIndex: Int? = null,
+    filter: Instruction.() -> Boolean
+): Int {
     var instructions = this.implementation?.instructions ?: return -1
     if (startIndex != null) {
         instructions = instructions.take(startIndex + 1)
@@ -488,9 +547,10 @@ fun Method.indexOfFirstInstructionReversed(startIndex: Int? = null, filter: Inst
  *
  * @return -1 if the instruction is not found.
  */
-fun Method.indexOfFirstInstructionReversed(targetOpcode: Opcode): Int = indexOfFirstInstructionReversed {
-    opcode == targetOpcode
-}
+fun Method.indexOfFirstInstructionReversed(targetOpcode: Opcode): Int =
+    indexOfFirstInstructionReversed {
+        opcode == targetOpcode
+    }
 
 /**
  * Get the index of matching instruction,
@@ -500,7 +560,10 @@ fun Method.indexOfFirstInstructionReversed(targetOpcode: Opcode): Int = indexOfF
  * @return The index of the instruction.
  * @see indexOfFirstInstructionReversed
  */
-fun Method.indexOfFirstInstructionReversedOrThrow(startIndex: Int? = null, targetOpcode: Opcode): Int =
+fun Method.indexOfFirstInstructionReversedOrThrow(
+    startIndex: Int? = null,
+    targetOpcode: Opcode
+): Int =
     indexOfFirstInstructionReversedOrThrow(startIndex) {
         opcode == targetOpcode
     }
@@ -511,9 +574,10 @@ fun Method.indexOfFirstInstructionReversedOrThrow(startIndex: Int? = null, targe
  *
  * @return -1 if the instruction is not found.
  */
-fun Method.indexOfFirstInstructionReversedOrThrow(targetOpcode: Opcode): Int = indexOfFirstInstructionReversedOrThrow {
-    opcode == targetOpcode
-}
+fun Method.indexOfFirstInstructionReversedOrThrow(targetOpcode: Opcode): Int =
+    indexOfFirstInstructionReversedOrThrow {
+        opcode == targetOpcode
+    }
 
 /**
  * Get the index of matching instruction,
@@ -523,7 +587,10 @@ fun Method.indexOfFirstInstructionReversedOrThrow(targetOpcode: Opcode): Int = i
  * @return The index of the instruction.
  * @see indexOfFirstInstructionReversed
  */
-fun Method.indexOfFirstInstructionReversedOrThrow(startIndex: Int? = null, filter: Instruction.() -> Boolean): Int {
+fun Method.indexOfFirstInstructionReversedOrThrow(
+    startIndex: Int? = null,
+    filter: Instruction.() -> Boolean
+): Int {
     val index = indexOfFirstInstructionReversed(startIndex, filter)
 
     if (index < 0) {
@@ -538,11 +605,12 @@ fun Method.indexOfFirstInstructionReversedOrThrow(startIndex: Int? = null, filte
  *  _Returns an empty list if no indices are found_
  *  @see findInstructionIndicesReversedOrThrow
  */
-fun Method.findInstructionIndicesReversed(filter: Instruction.() -> Boolean): List<Int> = instructions
-    .withIndex()
-    .filter { (_, instruction) -> filter(instruction) }
-    .map { (index, _) -> index }
-    .asReversed()
+fun Method.findInstructionIndicesReversed(filter: Instruction.() -> Boolean): List<Int> =
+    instructions
+        .withIndex()
+        .filter { (_, instruction) -> filter(instruction) }
+        .map { (index, _) -> index }
+        .asReversed()
 
 /**
  * @return An immutable list of indices of the instructions in reverse order.
@@ -583,7 +651,10 @@ internal fun MutableMethod.insertLiteralOverride(literal: Long, extensionMethodD
     insertLiteralOverride(literalIndex, extensionMethodDescriptor)
 }
 
-internal fun MutableMethod.insertLiteralOverride(literalIndex: Int, extensionMethodDescriptor: String) {
+internal fun MutableMethod.insertLiteralOverride(
+    literalIndex: Int,
+    extensionMethodDescriptor: String
+) {
     // TODO: make this work with objects and wide primitive values.
     val index = indexOfFirstInstructionOrThrow(literalIndex, MOVE_RESULT)
     val register = getInstruction<OneRegisterInstruction>(index).registerA
@@ -681,8 +752,8 @@ fun Method.cloneMutableAndPreserveParameters() =
  *
  * **Fingerprint match indexes will be increased positively by [numberOfParameterRegistersLogical]**.
  */
-fun Method.cloneMutableAndPreserveParameters(mutableClassDef : MutableClassDef) : MutableMethod {
-    check (!AccessFlags.STATIC.isSet(accessFlags) || parameters.isNotEmpty()) {
+fun Method.cloneMutableAndPreserveParameters(mutableClassDef: MutableClassDef): MutableMethod {
+    check(!AccessFlags.STATIC.isSet(accessFlags) || parameters.isNotEmpty()) {
         "Static methods have no parameter registers to preserve"
     }
 
@@ -829,7 +900,8 @@ val Method.numberOfParameterRegistersLogical: Int
  */
 val Method.p0Register: Int
     get() {
-        val impl = implementation ?: throw IllegalStateException("Method has no implementation: $this")
+        val impl =
+            implementation ?: throw IllegalStateException("Method has no implementation: $this")
         var paramRegs = 0
 
         // Count explicit parameters (wide types take 2 registers).
@@ -1281,3 +1353,23 @@ fun MutablePredicateList<Method>.literal(literalSupplier: () -> Long) {
     custom { containsLiteralInstruction(literalSupplier()) }
 }
 
+
+private fun <T> cachedReadOnlyProperty(block: BytecodePatchContext.(KProperty<*>) -> T) =
+    object : ReadOnlyProperty<BytecodePatchContext, T> {
+        private val cache = HashMap<BytecodePatchContext, T>(1)
+
+        override fun getValue(
+            thisRef: BytecodePatchContext,
+            property: KProperty<*>,
+        ) = if (thisRef in cache) {
+            cache.getValue(thisRef)
+        } else {
+            cache.getOrPut(thisRef) { thisRef.block(property) }
+        }
+    }
+
+infix fun <T> (context(BytecodePatchContext) (ClassDef) -> T).using(getMethod: BytecodePatchContext.() -> Method) =
+    cachedReadOnlyProperty { this@using(getMethod().immutableClassDef) }
+
+fun <T> getting(get: context(BytecodePatchContext) ClassDef.() -> T):
+        context(BytecodePatchContext) (ClassDef) -> T = { classDef -> classDef.get() }

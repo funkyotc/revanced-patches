@@ -17,6 +17,10 @@ internal val ClassDef.getBearerTokenMethodMatch by ClassDefComposing.composingFi
     instructions(string { contains("Basic") })
 }
 
+internal val BytecodePatchContext.getRedirectUriMethod by gettingFirstMethodDeclaratively(
+    "http://redditsync/auth"
+)
+
 internal val BytecodePatchContext.getUserAgentMethod by gettingFirstMethodDeclaratively {
     instructions("android:com.laurencedawson.reddit_sync"(String::contains))
 }

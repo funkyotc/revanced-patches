@@ -1,10 +1,15 @@
 package app.revanced.patches.reddit.customclients.joeyforreddit.api
 
+import app.revanced.patcher.extensions.addInstructions
+import app.revanced.patcher.extensions.getInstruction
+import app.revanced.patcher.extensions.replaceInstruction
 import app.revanced.patches.reddit.customclients.spoofClientPatch
 import app.revanced.patches.reddit.customclients.sync.detection.piracy.disablePiracyDetectionPatch
 import app.revanced.util.returnEarly
+import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 
-val spoofClientPatch = spoofClientPatch(redirectUri = "https://127.0.0.1:65023/authorize_callback") { clientIdOption ->
+val spoofClientPatch = spoofClientPatch { clientIdOption, redirectUriOption, userAgentOption ->
     dependsOn(disablePiracyDetectionPatch)
 
     compatibleWith(
@@ -14,22 +19,40 @@ val spoofClientPatch = spoofClientPatch(redirectUri = "https://127.0.0.1:65023/a
     )
 
     val clientId by clientIdOption
+    val redirectUri by redirectUriOption
+    val userAgent by userAgentOption
 
     apply {
-        // region Patch client id.
-
         getClientIdMethod.returnEarly(clientId!!)
 
-        // endregion
+        if (redirectUri != null) {
+            val redirectUri = redirectUri!!
 
-        // region Patch user agent.
+            oauthHelperConstructorMethodMatch.let {
+                it.method.apply {
+                    val index = it[0]
+                    val stringRegister =
+                        getInstruction<FiveRegisterInstruction>(index).registerC
 
-        // Use a random user agent.
-        val randomName = (0..100000).random()
-        val userAgent = "$randomName:app.revanced.$randomName:v1.0.0 (by /u/revanced)"
+                    addInstructions(
+                        index,
+                        "const-string v$stringRegister, \"$redirectUri\""
+                    )
+                }
 
-        authUtilityUserAgentMethod.returnEarly(userAgent)
+            }
 
-        // endregion
+            // Required, to override a hardcoded check for what appears to be the client id.
+            oauthContainsCodeMethodMatch.let {
+                it.method.apply {
+                    val index = it[0]
+                    val register = getInstruction<OneRegisterInstruction>(index).registerA
+
+                    replaceInstruction(index, "const/4 v$register, 0x1")
+                }
+            }
+        }
+
+        if (userAgent != null) authUtilityUserAgentMethod.returnEarly(userAgent!!)
     }
 }

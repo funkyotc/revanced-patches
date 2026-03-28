@@ -7,8 +7,9 @@ import app.revanced.patches.reddit.customclients.spoofClientPatch
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethod
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation
+import java.util.logging.Logger
 
-val spoofClientPatch = spoofClientPatch(redirectUri = "infinity://localhost") { clientIdOption ->
+val spoofClientPatch = spoofClientPatch { clientIdOption, redirectUriOption, userAgentOption ->
     compatibleWith(
         "ml.docilealligator.infinityforreddit",
         "ml.docilealligator.infinityforreddit.plus",
@@ -16,6 +17,8 @@ val spoofClientPatch = spoofClientPatch(redirectUri = "infinity://localhost") { 
     )
 
     val clientId by clientIdOption
+    val redirectUri by redirectUriOption
+    val userAgent by userAgentOption
 
     apply {
         apiUtilsMethod.classDef.methods.apply {
@@ -41,6 +44,13 @@ val spoofClientPatch = spoofClientPatch(redirectUri = "infinity://localhost") { 
             ).toMutable()
 
             add(newGetClientIdMethod)
+        }
+
+        if (redirectUri != null || userAgent != null) {
+            Logger.getLogger(this::class.java.name).warning(
+                "Patching redirect URI and user agent is not supported for Infinity for Reddit. " +
+                        "Only the client ID will be patched."
+            )
         }
     }
 }

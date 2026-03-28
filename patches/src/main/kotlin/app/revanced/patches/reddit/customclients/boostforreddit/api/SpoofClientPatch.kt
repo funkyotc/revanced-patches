@@ -1,40 +1,42 @@
 package app.revanced.patches.reddit.customclients.boostforreddit.api
 
+import app.revanced.patcher.CompositeMatch
 import app.revanced.patcher.extensions.getInstruction
 import app.revanced.patcher.extensions.replaceInstruction
-import app.revanced.patcher.extensions.stringReference
 import app.revanced.patches.reddit.customclients.spoofClientPatch
-import app.revanced.util.indexOfFirstInstructionOrThrow
 import app.revanced.util.returnEarly
-import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 
 @Suppress("unused")
-val spoofClientPatch = spoofClientPatch(redirectUri = "http://rubenmayayo.com") { clientIdOption ->
+val spoofClientPatch = spoofClientPatch { clientIdOption, redirectUriOption, userAgentOption ->
     compatibleWith("com.rubenmayayo.reddit")
 
     val clientId by clientIdOption
+    val redirectUri by redirectUriOption
+    val userAgent by userAgentOption
 
     apply {
-        // region Patch client id.
-
         getClientIdMethod.returnEarly(clientId!!)
 
-        // endregion
+        fun CompositeMatch.patch(replacementString: String) {
+            val index = get(0)
 
-        // region Patch user agent.
-
-        // Use a random user agent.
-        val randomName = (0..100000).random()
-        val userAgent = "$randomName:app.revanced.$randomName:v1.0.0 (by /u/revanced)"
-
-        val userAgentTemplateIndex = buildUserAgentMethod.indexOfFirstInstructionOrThrow {
-            opcode == Opcode.CONST_STRING && stringReference?.string == "%s:%s:%s (by /u/%s)"
+            val stringRegister = method.getInstruction<OneRegisterInstruction>(index).registerA
+            method.replaceInstruction(
+                index,
+                "const-string v$stringRegister, \"$replacementString\"",
+            )
         }
-        val register = buildUserAgentMethod.getInstruction<OneRegisterInstruction>(userAgentTemplateIndex).registerA
 
-        buildUserAgentMethod.replaceInstruction(userAgentTemplateIndex, "const-string v$register, \"$userAgent\"")
+        if (redirectUri != null) {
+            listOf(
+                loginActivityOnCreateMethodMatch,
+                loginActivityAShouldOverrideUrlLoadingMethodMatch
+            ).forEach { match ->
+                match.patch(redirectUri!!)
+            }
+        }
 
-        // endregion
+        if (userAgent != null) buildUserAgentMethodMatch.patch(userAgent!!)
     }
 }
