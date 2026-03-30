@@ -12,8 +12,9 @@ guava = "33.5.0-jre"
 apksig = "9.0.1"
 # TODO: Adjust once https://github.com/google/protobuf-gradle-plugin/pull/797 is merged.
 protobuf = "master-SNAPSHOT"
-protoc = "4.34.0"
+protoc = "4.34.1"
 shadow = "9.4.0"
+hiddenapibypass = "6.1"
 
 [libraries]
 annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
@@ -24,6 +25,7 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 apksig = { group = "com.android.tools.build", name = "apksig", version.ref = "apksig" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protoc" }
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protoc" }
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 
 [plugins]
 android-library = { id = "com.android.library" }

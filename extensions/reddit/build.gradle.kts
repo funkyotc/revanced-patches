@@ -1,5 +1,6 @@
 dependencies {
     compileOnly(project(":extensions:reddit:stub"))
+    implementation(libs.hiddenapibypass)
 }
 
 android {
