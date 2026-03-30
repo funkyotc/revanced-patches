@@ -1,7 +1,6 @@
 package app.revanced.patches.reddit.ad.general
 
 import app.revanced.patcher.extensions.addInstructions
-import app.revanced.patcher.extensions.addInstructionsWithLabels
 import app.revanced.patcher.extensions.getInstruction
 import app.revanced.patcher.patch.bytecodePatch
 import app.revanced.patches.reddit.misc.extension.sharedExtensionPatch
@@ -52,14 +51,13 @@ val hideAdsPatch = bytecodePatch("Hide ads") {
                 val sectionRegister =
                     getInstruction<FiveRegisterInstruction>(sectionIndex + 1).registerC
 
-                addInstructionsWithLabels(
+                addInstructions(
                     sectionIndex,
                     """
                         new-instance v$sectionRegister, Ljava/util/ArrayList;
                         invoke-direct { v$sectionRegister }, Ljava/util/ArrayList;-><init>()V
                         invoke-static { v$sectionRegister }, $immutableListBuilderReference
                         move-result-object v$sectionRegister
-                        nop
                     """
                 )
             }

@@ -6,6 +6,7 @@ import app.revanced.patcher.composingFirstMethod
 import app.revanced.patcher.custom
 import app.revanced.patcher.definingClass
 import app.revanced.patcher.field
+import app.revanced.patcher.firstImmutableMethodDeclaratively
 import app.revanced.patcher.firstMethodComposite
 import app.revanced.patcher.gettingFirstImmutableMethodDeclaratively
 import app.revanced.patcher.gettingFirstMethodDeclaratively
@@ -54,13 +55,22 @@ internal val BytecodePatchContext.submittedListingMethodMatch by composingFirstM
         Opcode.IPUT_OBJECT(),
     )
 }
-
-internal val BytecodePatchContext.adPostSectionConstructorMethodMatch by composingFirstMethod {
-    returnType("V")
-    name("<init>")
-    instructions(
-        "sections"(),
-    )
+internal val BytecodePatchContext.adPostSectionConstructorMethodMatch by getting {
+    firstMethodComposite {
+        returnType("V")
+        name("<init>")
+        instructions(
+            "sections"(),
+        )
+    }
+} using {
+    firstImmutableMethodDeclaratively {
+        accessFlags(AccessFlags.PUBLIC, AccessFlags.FINAL)
+        returnType("Ljava/lang/String;")
+        name("toString")
+        parameterTypes()
+        instructions("AdPostSection(linkId="(),)
+    }
 }
 
 internal val BytecodePatchContext.commentsAdStateToStringMethod by gettingFirstImmutableMethodDeclaratively {
