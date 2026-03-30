@@ -1,67 +1,84 @@
 package app.revanced.patches.reddit.ad.general
 
 import app.revanced.patcher.extensions.addInstructions
-import app.revanced.patcher.extensions.methodReference
-import app.revanced.patcher.extensions.removeInstruction
+import app.revanced.patcher.extensions.addInstructionsWithLabels
+import app.revanced.patcher.extensions.getInstruction
 import app.revanced.patcher.patch.bytecodePatch
-import app.revanced.patches.reddit.ad.comments.hideCommentAdsPatch
 import app.revanced.patches.reddit.misc.extension.sharedExtensionPatch
-import app.revanced.util.indexOfFirstInstruction
-import com.android.tools.smali.dexlib2.Opcode
+import app.revanced.util.returnEarly
+import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
-import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction22c
-import com.android.tools.smali.dexlib2.iface.reference.FieldReference
+import com.android.tools.smali.dexlib2.iface.instruction.TwoRegisterInstruction
+
+private const val EXTENSION_CLASS_DESCRIPTOR =
+    "Lapp/revanced/extension/reddit/patches/HideAdsPatch;"
 
 @Suppress("unused")
 val hideAdsPatch = bytecodePatch("Hide ads") {
-    dependsOn(hideCommentAdsPatch, sharedExtensionPatch)
+    dependsOn(sharedExtensionPatch)
 
     compatibleWith("com.reddit.frontpage")
 
     apply {
-        // region Filter promoted ads (does not work in popular or latest feed)
+        // region Filter promoted ads (does not work in popular or latest feed).
 
-        val filterMethodDescriptor =
-            "Lapp/revanced/extension/reddit/patches/FilterPromotedLinksPatch;" +
-                "->filterChildren(Ljava/lang/Iterable;)Ljava/util/List;"
+        listOf(
+            listingMethodMatch,
+            submittedListingMethodMatch
+        ).forEach { match ->
+            match.let {
+                it.method.apply {
+                    val index = it[-1]
+                    val register = getInstruction<TwoRegisterInstruction>(index).registerA
 
-        val setPostsListChildren = adPostMethod.implementation!!.instructions.first { instruction ->
-            if (instruction.opcode != Opcode.IPUT_OBJECT) return@first false
-
-            val reference = (instruction as ReferenceInstruction).reference as FieldReference
-            reference.name == "children"
+                    addInstructions(
+                        index,
+                        """
+                            invoke-static { v$register }, $EXTENSION_CLASS_DESCRIPTOR->hideOldPostAds(Ljava/util/List;)Ljava/util/List;
+                            move-result-object v$register
+                        """
+                    )
+                }
+            }
         }
 
-        val castedInstruction = setPostsListChildren as Instruction22c
-        val itemsRegister = castedInstruction.registerA
-        val listInstanceRegister = castedInstruction.registerB
+        val immutableListBuilderReference = immutableListBuilderMethodMatch.let {
+            it.method.getInstruction<ReferenceInstruction>(it[-1]).reference
+        }
 
-        // postsList.children = filterChildren(postListItems)
-        adPostMethod.removeInstruction(setPostsListChildren.location.index)
-        adPostMethod.addInstructions(
-            setPostsListChildren.location.index,
-            """
-                invoke-static {v$itemsRegister}, $filterMethodDescriptor
-                move-result-object v0
-                iput-object v0, v$listInstanceRegister, ${castedInstruction.reference}
-            """,
-        )
+        adPostSectionConstructorMethodMatch.let {
+            it.method.apply {
+                val sectionIndex = it[0]
+                val sectionRegister =
+                    getInstruction<FiveRegisterInstruction>(sectionIndex + 1).registerC
+
+                addInstructionsWithLabels(
+                    sectionIndex,
+                    """
+                        new-instance v$sectionRegister, Ljava/util/ArrayList;
+                        invoke-direct { v$sectionRegister }, Ljava/util/ArrayList;-><init>()V
+                        invoke-static { v$sectionRegister }, $immutableListBuilderReference
+                        move-result-object v$sectionRegister
+                        nop
+                    """
+                )
+            }
+        }
 
         // endregion
 
-        // region Remove ads from popular and latest feed
+        // region Filter comment ads.
 
-        // The new feeds work by inserting posts into lists.
-        // AdElementConverter is conveniently responsible for inserting all feed ads.
-        // By removing the appending instruction no ad posts gets appended to the feed.
+        commentsViewModelAdLoaderMethod.returnEarly()
 
-        val index = newAdPostMethod.indexOfFirstInstruction {
-            val reference = methodReference ?: return@indexOfFirstInstruction false
+        commentsAdStateConstructorMethodMatch.let {
+            it.method.apply {
+                val index = it[-1]
+                val register = getInstruction<TwoRegisterInstruction>(index).registerA
 
-            reference.name == "add" && reference.definingClass == "Ljava/util/ArrayList;"
+                addInstructions(index, "const/4 v$register, 1")
+            }
         }
-
-        newAdPostMethod.removeInstruction(index)
     }
 
     // endregion

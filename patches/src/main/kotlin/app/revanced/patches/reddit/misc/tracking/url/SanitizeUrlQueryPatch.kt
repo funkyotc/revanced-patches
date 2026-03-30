@@ -11,6 +11,6 @@ val sanitizeSharingLinksPatch = bytecodePatch(
     compatibleWith("com.reddit.frontpage")
 
     apply {
-        shareLinkFormatterMethod.addInstructions(0, "return-object p0")
+        formatShareLinkMethod.addInstructions(0, "return-object p0")
     }
 }
