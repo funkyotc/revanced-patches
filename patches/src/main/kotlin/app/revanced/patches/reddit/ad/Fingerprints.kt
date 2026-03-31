@@ -1,4 +1,4 @@
-package app.revanced.patches.reddit.ad.general
+package app.revanced.patches.reddit.ad
 
 import app.revanced.patcher.accessFlags
 import app.revanced.patcher.allOf
