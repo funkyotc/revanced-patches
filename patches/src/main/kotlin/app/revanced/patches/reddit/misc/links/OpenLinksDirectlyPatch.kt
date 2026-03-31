@@ -17,9 +17,9 @@ val openLinksDirectlyPatch = bytecodePatch(
     name = "Open links directly",
     description = "Opens URLs directly without the redirect page."
 ) {
-    dependsOn(sharedExtensionPatch)
-
     compatibleWith("com.reddit.frontpage")
+
+    dependsOn(sharedExtensionPatch)
 
     apply {
         customReportsMethodMatch.let {
