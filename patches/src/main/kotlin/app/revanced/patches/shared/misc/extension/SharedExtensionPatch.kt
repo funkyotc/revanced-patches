@@ -1,10 +1,15 @@
 package app.revanced.patches.shared.misc.extension
 
-import app.revanced.patcher.*
+import app.revanced.patcher.MutablePredicateList
+import app.revanced.patcher.definingClass
 import app.revanced.patcher.extensions.addInstruction
 import app.revanced.patcher.firstClassDef
+import app.revanced.patcher.firstMethodDeclaratively
+import app.revanced.patcher.name
+import app.revanced.patcher.parameterTypes
 import app.revanced.patcher.patch.BytecodePatchContext
 import app.revanced.patcher.patch.bytecodePatch
+import app.revanced.patcher.returnType
 import app.revanced.util.returnEarly
 import com.android.tools.smali.dexlib2.iface.Method
 import java.net.URLDecoder
@@ -70,10 +75,11 @@ fun sharedExtensionPatch(
          *         or "Unknown" if the entry does not exist or is blank.
          */
         @Suppress("SameParameterValue")
-        fun getPatchesManifestEntry(attributeKey: String) = JarFile(getCurrentJarFilePath()).use { jarFile ->
-            jarFile.manifest.mainAttributes.entries.firstOrNull { it.key.toString() == attributeKey }?.value?.toString()
-                ?: "Unknown"
-        }
+        fun getPatchesManifestEntry(attributeKey: String) =
+            JarFile(getCurrentJarFilePath()).use { jarFile ->
+                jarFile.manifest.mainAttributes.entries.firstOrNull { it.key.toString() == attributeKey }?.value?.toString()
+                    ?: "Unknown"
+            }
 
         val manifestValue = getPatchesManifestEntry("Version")
 
@@ -95,7 +101,7 @@ class ExtensionHook internal constructor(
         method.addInstruction(
             insertIndex,
             "invoke-static/range { $contextRegister .. $contextRegister }, " +
-                "$extensionClassDescriptor->setContext(Landroid/content/Context;)V",
+                    "$extensionClassDescriptor->setContext(Landroid/content/Context;)V",
         )
     }
 }
@@ -111,18 +117,16 @@ fun extensionHook(
  * defined in the app manifest.xml file.
  *
  * @param activityClassType Either the full activity class type such as `Lcom/company/MainActivity;`
- *                          or the 'starts with' or 'ends with' string for the activity such as `/MainActivity;`
+ *                          or the 'starts with' or 'ends with' string for the activity such as `/MainActivity;`.
+ * @param hookOnCreateBundleMethod If the extension should hook `onCreate(Landroid/os/Bundle;)`.
+ *
  */
-fun activityOnCreateExtensionHook(activityClassType: String) = extensionHook {
-        name("onCreate")
-        definingClass(activityClassType)
-        returnType("V")
-
-        /*
-        * Leaving this out (for now?), because before the refactor many apps
-        * which used a simpler fingerprint checking only method name and classDef name
-        * were refactored to use this instead, which caused their hooks to fail.
-        */
-        // parameterTypes("Landroid/os/Bundle;")
-    }
-
+fun activityOnCreateExtensionHook(
+    activityClassType: String,
+    hookOnCreateBundleMethod: Boolean = false,
+) = extensionHook {
+    name("onCreate")
+    definingClass(activityClassType)
+    returnType("V")
+    if (hookOnCreateBundleMethod) parameterTypes("Landroid/os/Bundle;")
+}

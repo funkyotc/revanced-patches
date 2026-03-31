@@ -5,6 +5,7 @@ import app.revanced.patcher.extensions.addInstructions
 import app.revanced.patcher.extensions.methodReference
 import app.revanced.patcher.firstMethod
 import app.revanced.patcher.patch.bytecodePatch
+import app.revanced.patches.reddit.misc.extension.sharedExtensionPatch
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 
 
@@ -16,6 +17,8 @@ val openLinksDirectlyPatch = bytecodePatch(
     name = "Open links directly",
     description = "Opens URLs directly without the redirect page."
 ) {
+    dependsOn(sharedExtensionPatch)
+
     compatibleWith("com.reddit.frontpage")
 
     apply {
