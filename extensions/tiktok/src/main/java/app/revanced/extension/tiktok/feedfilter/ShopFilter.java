@@ -4,7 +4,6 @@ import app.revanced.extension.tiktok.settings.Settings;
 import com.ss.android.ugc.aweme.feed.model.Aweme;
 
 public class ShopFilter implements IFilter {
-    private static final String SHOP_INFO = "placeholder_product_id";
     @Override
     public boolean getEnabled() {
         return Settings.HIDE_SHOP.get();
@@ -12,6 +11,10 @@ public class ShopFilter implements IFilter {
 
     @Override
     public boolean getFiltered(Aweme item) {
-        return item.getShareUrl().contains(SHOP_INFO);
+        String url = item.getShareUrl();
+        if (url == null) return false;
+        return url.contains("placeholder_product_id")
+                || url.contains("shop_tab_feed")
+                || url.contains("ec_shared_reflux");
     }
 }
