@@ -15,7 +15,8 @@ public final class FeedItemsFilter {
             new ImageVideoFilter(),
             new ViewCountFilter(),
             new LikeCountFilter(),
-            new ShopFilter()
+            new ShopFilter(),
+            new AigcFilter()
     );
 
     public static void filter(FeedItemList feedItemList) {
