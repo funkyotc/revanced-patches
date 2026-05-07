@@ -101,5 +101,5 @@ fun jsonHook(descriptor: String): JsonHook {
         }
     }
 
-    return JsonHook(JSON_HOOK_CLASS_DESCRIPTOR)
+    return JsonHook(descriptor)
 }
