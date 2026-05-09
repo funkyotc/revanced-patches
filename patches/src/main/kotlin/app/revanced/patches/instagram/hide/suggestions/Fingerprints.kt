@@ -3,6 +3,7 @@ package app.revanced.patches.instagram.hide.suggestions
 import app.revanced.patcher.composingFirstMethod
 import app.revanced.patcher.instructions
 import app.revanced.patcher.invoke
+import app.revanced.patcher.name
 import app.revanced.patcher.patch.BytecodePatchContext
 import app.revanced.patcher.unorderedAllOf
 
@@ -16,6 +17,10 @@ internal val FEED_ITEM_KEYS_TO_BE_HIDDEN = arrayOf(
     "suggested_users",
 )
 
-internal val BytecodePatchContext.feedItemParseFromJsonMethodMatch by composingFirstMethod("feed_item_type") {
+internal val BytecodePatchContext.feedItemParseFromJsonMethodMatch by composingFirstMethod(
+    "suggested_users",
+    "text_app_suggested_users_kickstart_unit",
+) {
+    name("unsafeParseFromJson")
     instructions(predicates = unorderedAllOf(predicates = FEED_ITEM_KEYS_TO_BE_HIDDEN.map { it() }.toTypedArray()))
 }

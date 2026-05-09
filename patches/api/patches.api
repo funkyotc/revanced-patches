@@ -361,10 +361,6 @@ public final class app/revanced/patches/instagram/misc/share/privacy/SanitizeSha
 	public static final fun getSanitizeSharingLinksPatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
-public final class app/revanced/patches/instagram/misc/signature/SignatureCheckPatchKt {
-	public static final fun getDisableSignatureCheckPatch ()Lapp/revanced/patcher/patch/Patch;
-}
-
 public final class app/revanced/patches/instagram/reels/DisableReelsScrollingPatchKt {
 	public static final fun getDisableReelsScrollingPatch ()Lapp/revanced/patcher/patch/Patch;
 }
@@ -648,7 +644,7 @@ public final class app/revanced/patches/photomath/misc/unlock/plus/UnlockPlusPat
 }
 
 public final class app/revanced/patches/photoshopmix/BypassLoginPatchKt {
-	public static final fun getBypassLoginPatch ()Lapp/revanced/patcher/patch/BytecodePatch;
+	public static final fun getBypassLoginPatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
 public final class app/revanced/patches/piccomafr/misc/SpoofAndroidDeviceIdPatchKt {
@@ -699,11 +695,11 @@ public final class app/revanced/patches/rar/misc/annoyances/purchasereminder/Hid
 	public static final fun getHidePurchaseReminderPatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
-public final class app/revanced/patches/reddit/ad/comments/HideCommentAdsPatchKt {
-	public static final fun getHideCommentAdsPatch ()Lapp/revanced/patcher/patch/Patch;
+public final class app/revanced/patches/reddit/ad/FingerprintsKt {
+	public static final fun getCommentsAdStateConstructorMethodMatch (Lapp/revanced/patcher/patch/BytecodePatchContext;)Lapp/revanced/patcher/CompositeMatch;
 }
 
-public final class app/revanced/patches/reddit/ad/general/HideAdsPatchKt {
+public final class app/revanced/patches/reddit/ad/HideAdsPatchKt {
 	public static final fun getHideAdsPatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
@@ -722,8 +718,7 @@ public final class app/revanced/patches/reddit/customclients/FixSLinksPatchKt {
 }
 
 public final class app/revanced/patches/reddit/customclients/SpoofClientPatchKt {
-	public static final fun spoofClientPatch (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)Lapp/revanced/patcher/patch/Patch;
-	public static synthetic fun spoofClientPatch$default (Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lapp/revanced/patcher/patch/Patch;
+	public static final fun spoofClientPatch (Lkotlin/jvm/functions/Function4;)Lapp/revanced/patcher/patch/Patch;
 }
 
 public final class app/revanced/patches/reddit/customclients/baconreader/api/SpoofClientPatchKt {
@@ -845,16 +840,32 @@ public final class app/revanced/patches/reddit/customclients/sync/syncforreddit/
 	public static final fun getFixVideoDownloadsPatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
+public final class app/revanced/patches/reddit/layout/community/HideRecommendedCommunitiesShelfPatchKt {
+	public static final fun getHideRecommendedCommunitiesShelfPatch ()Lapp/revanced/patcher/patch/Patch;
+}
+
+public final class app/revanced/patches/reddit/layout/dialogs/RemoveSubredditDialogsPatchKt {
+	public static final fun getRemoveSubredditDialogsPatch ()Lapp/revanced/patcher/patch/Patch;
+}
+
 public final class app/revanced/patches/reddit/layout/disablescreenshotpopup/DisableScreenshotPopupPatchKt {
 	public static final fun getDisableScreenshotPopupPatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
-public final class app/revanced/patches/reddit/layout/premiumicon/UnlockPremiumIconPatchKt {
-	public static final fun getUnlockPremiumIconsPatch ()Lapp/revanced/patcher/patch/Patch;
+public final class app/revanced/patches/reddit/layout/trendingtoday/HideTrendingTodayShelfPatchKt {
+	public static final fun getHideTrendingTodayShelfPatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
 public final class app/revanced/patches/reddit/misc/extension/ExtensionPatchKt {
 	public static final fun getSharedExtensionPatch ()Lapp/revanced/patcher/patch/Patch;
+}
+
+public final class app/revanced/patches/reddit/misc/links/OpenLinksDirectlyPatchKt {
+	public static final fun getOpenLinksDirectlyPatch ()Lapp/revanced/patcher/patch/Patch;
+}
+
+public final class app/revanced/patches/reddit/misc/signature/SpoofSignaturePatchKt {
+	public static final fun getSpoofSignaturePatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
 public final class app/revanced/patches/reddit/misc/tracking/url/SanitizeUrlQueryPatchKt {
@@ -892,7 +903,8 @@ public final class app/revanced/patches/shared/misc/extension/ExtensionHook {
 }
 
 public final class app/revanced/patches/shared/misc/extension/SharedExtensionPatchKt {
-	public static final fun activityOnCreateExtensionHook (Ljava/lang/String;)Lapp/revanced/patches/shared/misc/extension/ExtensionHook;
+	public static final fun activityOnCreateExtensionHook (Ljava/lang/String;Z)Lapp/revanced/patches/shared/misc/extension/ExtensionHook;
+	public static synthetic fun activityOnCreateExtensionHook$default (Ljava/lang/String;ZILjava/lang/Object;)Lapp/revanced/patches/shared/misc/extension/ExtensionHook;
 	public static final fun extensionHook (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;)Lapp/revanced/patches/shared/misc/extension/ExtensionHook;
 	public static synthetic fun extensionHook$default (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lapp/revanced/patches/shared/misc/extension/ExtensionHook;
 	public static final fun sharedExtensionPatch (Ljava/lang/String;[Lapp/revanced/patches/shared/misc/extension/ExtensionHook;)Lapp/revanced/patcher/patch/Patch;
@@ -1332,6 +1344,10 @@ public final class app/revanced/patches/tiktok/misc/share/SanitizeShareUrlsPatch
 
 public final class app/revanced/patches/tiktok/misc/spoof/sim/SpoofSimPatchKt {
 	public static final fun getSIMSpoofPatch ()Lapp/revanced/patcher/patch/Patch;
+}
+
+public final class app/revanced/patches/tiktok/misc/telemetry/DisableTelemetryPatchKt {
+	public static final fun getDisableTelemetryPatch ()Lapp/revanced/patcher/patch/Patch;
 }
 
 public final class app/revanced/patches/trakt/UnlockProPatchKt {
@@ -1993,6 +2009,7 @@ public final class app/revanced/util/BytecodeUtilsKt {
 	public static final fun getNumberOfParameterRegisters (Lcom/android/tools/smali/dexlib2/iface/Method;)I
 	public static final fun getNumberOfParameterRegistersLogical (Lcom/android/tools/smali/dexlib2/iface/Method;)I
 	public static final fun getP0Register (Lcom/android/tools/smali/dexlib2/iface/Method;)I
+	public static final fun getting (Lkotlin/jvm/functions/Function2;)Lkotlin/jvm/functions/Function2;
 	public static final fun indexOfFirstInstruction (Lcom/android/tools/smali/dexlib2/iface/Method;ILcom/android/tools/smali/dexlib2/Opcode;)I
 	public static final fun indexOfFirstInstruction (Lcom/android/tools/smali/dexlib2/iface/Method;ILkotlin/jvm/functions/Function1;)I
 	public static final fun indexOfFirstInstruction (Lcom/android/tools/smali/dexlib2/iface/Method;Lcom/android/tools/smali/dexlib2/Opcode;)I
@@ -2050,6 +2067,7 @@ public final class app/revanced/util/BytecodeUtilsKt {
 	public static final fun returnLate (Lapp/revanced/com/android/tools/smali/dexlib2/mutable/MutableMethod;Z)V
 	public static final fun transformMethods (Lapp/revanced/com/android/tools/smali/dexlib2/mutable/MutableClassDef;Lkotlin/jvm/functions/Function1;)V
 	public static final fun traverseClassHierarchy (Lapp/revanced/patcher/patch/BytecodePatchContext;Lapp/revanced/com/android/tools/smali/dexlib2/mutable/MutableClassDef;Lkotlin/jvm/functions/Function1;)V
+	public static final fun using (Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;)Lkotlin/properties/ReadOnlyProperty;
 }
 
 public final class app/revanced/util/FreeRegisterProvider {

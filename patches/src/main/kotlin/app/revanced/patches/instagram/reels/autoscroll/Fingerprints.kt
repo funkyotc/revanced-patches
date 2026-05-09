@@ -16,9 +16,11 @@ internal val BytecodePatchContext.clipsAutoScrollFeatureCheckMethod by gettingFi
 
 /**
  * Matches the toggle handler called when the user taps
- * the auto-scroll button. Contains analytics logging strings.
+ * the auto-scroll button.
+ *
+ * On newer Instagram builds, the handler no longer contains the generic
+ * "auto_scroll" string. The analytics event name remains stable.
  */
 internal val BytecodePatchContext.clipsAutoScrollToggleMethod by gettingFirstMethodDeclaratively(
-    "auto_scroll",
     "instagram_clips_viewer_autoplay_tap",
 )

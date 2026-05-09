@@ -14,11 +14,12 @@ val hideExploreFeedPatch = bytecodePatch(
     compatibleWith("com.instagram.android")
 
     apply {
-        exploreResponseJsonParserMethodMatch.method.apply {
-            val targetStringIndex = exploreResponseJsonParserMethodMatch[0]
-            val targetStringRegister = getInstruction<OneRegisterInstruction>(targetStringIndex).registerA
+        val match = exploreResponseJsonParserMethodMatch
+        exploreResponseJsonParserMethod.apply {
+            val moveResultIndex = match[2]
+            val targetStringRegister = getInstruction<OneRegisterInstruction>(moveResultIndex).registerA
 
-            replaceInstruction(targetStringIndex, "const-string v$targetStringRegister, \"BOGUS\"")
+            replaceInstruction(moveResultIndex, "const-string v$targetStringRegister, \"BOGUS\"")
         }
     }
 }
