@@ -1496,6 +1496,14 @@ Limitation: Using the back button on the toolbar may not work"</string>
             <string name="revanced_shorts_player_type_regular_player">Regular player</string>
             <string name="revanced_shorts_player_type_regular_player_fullscreen">Regular player fullscreen</string>
         </patch>
+        <patch id="layout.shortsplayer.dimShortsOverlayPatch">
+            <string name="revanced_shorts_overlay_opacity_title">Shorts overlay opacity</string>
+            <string name="revanced_shorts_overlay_opacity_summary">Opacity of the Shorts overlay (0-100), where 0 is transparent. Reducing this prevents OLED burn-in.</string>
+            <string name="revanced_shorts_overlay_opacity_invalid_toast">Shorts overlay opacity must be between 0-100</string>
+            <string name="revanced_shorts_immersive_mode_title">Immersive Shorts</string>
+            <string name="revanced_shorts_immersive_mode_summary_on">Status bar is hidden when watching Shorts</string>
+            <string name="revanced_shorts_immersive_mode_summary_off">Status bar is visible when watching Shorts</string>
+        </patch>
         <patch id="layout.shortsautoplay.shortsAutoplayPatch">
             <string name="revanced_shorts_autoplay_title">Autoplay Shorts</string>
             <string name="revanced_shorts_autoplay_summary_on">Shorts will autoplay</string>
