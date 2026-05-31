@@ -21,10 +21,10 @@ fun BytecodePatchContext.addJsonHook(
     if (jsonHook.added) return
 
     // Insert hooks right before calling buildList.
-    val insertIndex = jsonHookPatchMethodMatch[-1]
+    val addIndex = jsonHookPatchMethodMatch[-1]
 
     jsonHookPatchMethodMatch.method.addInstructions(
-        insertIndex,
+        addIndex + 1,
         """
             sget-object v1, ${jsonHook.descriptor}->INSTANCE:${jsonHook.descriptor}
             invoke-interface {v0, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
@@ -67,10 +67,10 @@ val jsonHookPatch = bytecodePatch(
     }
 
     afterDependents {
-        // Remove hooks.add(dummyHook).
-        val addDummyHookIndex = jsonHookPatchMethodMatch[-1]
+        val getDummyHookIndex = jsonHookPatchMethodMatch[0]
 
-        jsonHookPatchMethodMatch.method.removeInstructions(addDummyHookIndex, 2)
+        // Remove 2 instructions that add DummyHook.
+        jsonHookPatchMethodMatch.method.removeInstructions(getDummyHookIndex, 2)
     }
 }
 

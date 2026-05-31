@@ -6,5 +6,5 @@ import app.revanced.patches.shared.misc.extension.extensionHook
 
 internal val applicationInitHook = extensionHook {
     name("onCreate")
-    definingClass("Lcom/twitter/app/TwitterApplication;")
+    definingClass("Lcom/twitter/android/StartActivity;")
 }

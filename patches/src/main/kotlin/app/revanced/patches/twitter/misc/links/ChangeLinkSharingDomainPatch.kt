@@ -10,6 +10,8 @@ import app.revanced.util.indexOfFirstInstructionOrThrow
 import app.revanced.util.returnEarly
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.TwoRegisterInstruction
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.logging.Logger
@@ -70,8 +72,7 @@ val changeLinkSharingDomainPatch = bytecodePatch(
 
     compatibleWith(
         "com.twitter.android"(
-            "10.60.0-release.0",
-            "10.86.0-release.0",
+            "11.80.0-release.0",
         ),
     )
 
@@ -106,6 +107,44 @@ val changeLinkSharingDomainPatch = bytecodePatch(
                 "invoke-static { v$register }, $EXTENSION_CLASS_DESCRIPTOR->" +
                     "formatResourceLink([Ljava/lang/Object;)Ljava/lang/String;",
             )
+        }
+
+        // Formats share link such as sharing through XChat.
+        linkInternalShareSheetMethodMatch.let {
+            it.method.apply {
+                val statusStringIndex = it[-2]
+                val statusStringRegister = getInstruction<OneRegisterInstruction>(statusStringIndex).registerA
+
+                val contextualPostIndex = it[-1]
+                val contextualPostRegister = getInstruction<TwoRegisterInstruction>(contextualPostIndex).registerA
+
+                addInstructions(
+                    contextualPostIndex + 1,
+                    """
+                    invoke-static { v$contextualPostRegister }, $EXTENSION_CLASS_DESCRIPTOR->formatInternalShareSheetLink(Ljava/lang/Object;)Ljava/lang/String;
+                    move-result-object v$statusStringRegister
+                """
+                )
+            }
+        }
+
+        // Formats share link such as "Copy link" or "Share via..." etc.
+        linkExternalShareSheetMethodMatch.let {
+            it.method.apply {
+                val rootContextualPostIndex = it[0]
+                val rootContextualPostRegister = getInstruction<OneRegisterInstruction>(rootContextualPostIndex).registerA
+
+                val statusStringIndex = it[-1]
+                val statusStringRegister = getInstruction<OneRegisterInstruction>(statusStringIndex).registerA
+
+                addInstructions(
+                    statusStringIndex + 1,
+                    """
+                    invoke-static { v$rootContextualPostRegister }, $EXTENSION_CLASS_DESCRIPTOR->formatExternalShareSheetLink(Ljava/lang/Object;)Ljava/lang/String;
+                    move-result-object v$statusStringRegister
+                    """
+                )
+            }
         }
     }
 }
