@@ -9,6 +9,7 @@ import app.revanced.patcher.allOf
 import app.revanced.patcher.classDef
 import app.revanced.patcher.custom
 import app.revanced.patcher.extensions.addInstructions
+import app.revanced.patcher.extensions.fieldReference
 import app.revanced.patcher.extensions.getInstruction
 import app.revanced.patcher.extensions.methodReference
 import app.revanced.patcher.extensions.removeInstructions
@@ -26,6 +27,7 @@ import app.revanced.patcher.returnType
 import app.revanced.patches.shared.misc.extension.sharedExtensionPatch
 import app.revanced.util.addInstructionsAtControlFlowLabel
 import app.revanced.util.findFieldFromToString
+import app.revanced.util.indexOfFirstInstruction
 import app.revanced.util.indexOfFirstInstructionReversedOrThrow
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
@@ -136,8 +138,22 @@ internal fun lithoFilterPatch(
 
         // Tell the extension whether to extract the identifier from the buffer.
         if (getExtractIdentifierFromBuffer()) {
-            lithoFilterInitMethod.classDef.fields.first { it.name == "EXTRACT_IDENTIFIER_FROM_BUFFER" }
-                .initialValue = ImmutableBooleanEncodedValue.forBoolean(true).toMutable()
+            lithoFilterInitMethod.apply {
+                val index = indexOfFirstInstruction {
+                    fieldReference?.name == "EXTRACT_IDENTIFIER_FROM_BUFFER"
+                }
+
+                val freeRegister = getFreeRegisterProvider(index, 1)
+                    .getFreeRegister()
+
+                addInstructions(
+                    index + 1,
+                    """
+                        const/4 v$freeRegister, 0x1
+                        sput-boolean v$freeRegister, ${EXTENSION_CLASS_DESCRIPTOR}->EXTRACT_IDENTIFIER_FROM_BUFFER:Z
+                    """
+                )
+            }
         }
 
         // Add an interceptor to steal the protobuf of our component.

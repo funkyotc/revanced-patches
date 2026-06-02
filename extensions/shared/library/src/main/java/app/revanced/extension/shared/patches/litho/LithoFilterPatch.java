@@ -121,7 +121,10 @@ public final class LithoFilterPatch {
      * <p>
      * <b>This is set during patching, do not change manually.</b>
      */
-    private static final boolean EXTRACT_IDENTIFIER_FROM_BUFFER = false;
+    // Must use non-final boolean to allow patching to change value from false to true,
+    // otherwise compiler inlines the value and the patch has no effect.
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
+    private static boolean EXTRACT_IDENTIFIER_FROM_BUFFER = false;
 
     /**
      * Turns on additional logging, used for development purposes only.
