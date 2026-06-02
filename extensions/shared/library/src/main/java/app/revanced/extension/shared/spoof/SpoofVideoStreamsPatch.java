@@ -38,7 +38,7 @@ public class SpoofVideoStreamsPatch {
     @Nullable
     private static volatile AppLanguage languageOverride;
 
-    private static volatile ClientType preferredClient = ClientType.ANDROID_REEL;
+    private static volatile ClientType preferredClient = ClientType.ANDROID_REEL_NO_AUTH;
 
     /**
      * @return If this patch was included during patching.

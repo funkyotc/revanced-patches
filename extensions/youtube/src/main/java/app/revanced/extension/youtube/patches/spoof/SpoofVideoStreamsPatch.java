@@ -42,11 +42,12 @@ public class SpoofVideoStreamsPatch {
             client = ANDROID_VR_1_61_48;
         }
 
+        // Reels can take up to 1 minute for videos start playback.
+        // Only use it if the user has selected it.
         List<ClientType> availableClients = List.of(
-                ANDROID_REEL,
+                ANDROID_CREATOR,
                 ANDROID_VR_1_43_32,
-                VISIONOS,
-                ANDROID_CREATOR
+                VISIONOS
         );
 
         app.revanced.extension.shared.spoof.SpoofVideoStreamsPatch.setClientsToUse(

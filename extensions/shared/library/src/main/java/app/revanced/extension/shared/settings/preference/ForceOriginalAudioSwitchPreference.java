@@ -16,7 +16,7 @@ public class ForceOriginalAudioSwitchPreference extends SwitchPreference {
     // Spoof stream patch is not included, or is not currently spoofing to Android Studio.
     private static final boolean available = !SpoofVideoStreamsPatch.isPatchIncluded()
             || !(BaseSettings.SPOOF_VIDEO_STREAMS.get()
-            && SpoofVideoStreamsPatch.getPreferredClient() == ClientType.ANDROID_CREATOR);
+            || SpoofVideoStreamsPatch.getPreferredClient() == ClientType.ANDROID_REEL);
 
     {
         if (!available) {

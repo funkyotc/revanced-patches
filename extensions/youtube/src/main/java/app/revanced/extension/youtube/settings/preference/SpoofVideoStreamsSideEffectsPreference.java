@@ -88,7 +88,7 @@ public class SpoofVideoStreamsSideEffectsPreference extends Preference {
                             + '\n' + str("revanced_spoof_video_streams_about_no_stable_volume")
                             + '\n' + str("revanced_spoof_video_streams_about_no_av1")
                             + '\n' + str("revanced_spoof_video_streams_about_no_force_original_audio");
-            case ANDROID_REEL ->
+            case ANDROID_REEL, ANDROID_REEL_NO_AUTH ->
                     summary = str("revanced_spoof_video_streams_about_playback_failure");
             // VR 1.61 is not exposed in the UI and should never be reached here.
             case ANDROID_VR_1_43_32, ANDROID_VR_1_61_48 ->
@@ -103,7 +103,7 @@ public class SpoofVideoStreamsSideEffectsPreference extends Preference {
         }
 
         // Only Android Reel and Android VR supports 360° VR immersive mode.
-        if (!clientType.name().startsWith("ANDROID_VR") && clientType != ClientType.ANDROID_REEL) {
+        if (!clientType.name().startsWith("ANDROID_VR") && clientType != ClientType.ANDROID_REEL_NO_AUTH) {
             summary += '\n' + str("revanced_spoof_video_streams_about_no_immersive_mode");
         }
 

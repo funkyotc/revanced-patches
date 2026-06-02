@@ -28,7 +28,7 @@ public enum ClientType {
             Build.VERSION.RELEASE,
             String.valueOf(Build.VERSION.SDK_INT),
             Build.ID,
-            "20.44.38",
+            "20.26.46", // Other versions like 20.44.38 seem to not work.
             // This client has been used by most open-source YouTube stream extraction tools since 2024, including NewPipe Extractor, SmartTube, and Grayjay.
             // This client can log in, but if an access token is used in the request, GVS can more easily identify the request as coming from ReVanced.
             // This means that the GVS server can strengthen its validation of the ANDROID_REEL client.
@@ -36,6 +36,22 @@ public enum ClientType {
             true,
             false,
             "Android Reel"
+    ),
+    ANDROID_REEL_NO_AUTH(
+            ANDROID_REEL.id,
+            ANDROID_REEL.clientName,
+            ANDROID_REEL.packageName,
+            ANDROID_REEL.deviceMake,
+            ANDROID_REEL.deviceModel,
+            ANDROID_REEL.osName,
+            ANDROID_REEL.osVersion,
+            ANDROID_REEL.androidSdkVersion,
+            ANDROID_REEL.buildId,
+            ANDROID_REEL.clientVersion,
+            false,
+            ANDROID_REEL.supportsMultiAudioTracks,
+            ANDROID_REEL.usePlayerEndpoint,
+            "Android Reel no auth"
     ),
     /**
      * Video not playable: Kids / Paid / Movie / Private / Age-restricted.
