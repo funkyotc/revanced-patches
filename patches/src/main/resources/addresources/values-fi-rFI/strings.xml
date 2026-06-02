@@ -1788,12 +1788,8 @@ AV1-videon toisto saattaa pätkiä."</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Ääniraitavalikko puuttuu</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Ei AV1-videokoodekkia</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Tasainen äänenvoimakkuus ei ole käytettävissä</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Lasten videot eivät ehkä toistu, kun olet kirjautunut ulos tai incognito-tilassa</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Pakota alkuperäinen ääni ei ole käytettävissä</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Näytä teknisissä tiedoissa</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Asiakastyyppi näytetään teknisissä tiedoissa</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Asiakastyyppi piilotetaan teknisissä tiedoissa</string>
         </patch>
     </app>
     <app id="music">

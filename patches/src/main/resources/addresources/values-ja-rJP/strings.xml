@@ -1786,12 +1786,8 @@ AV1 での動画再生は、カクつくまたはコマ落ちが発生する場�
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">•「音声トラック」がフライアウト メニューに表示されない</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• AV1 コーデックが利用できない</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">•「一定音量」が利用できない</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• ログアウト時またはシークレット モード時に、子ども向け動画が再生されない可能性がある</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">•「オリジナルの音声を強制的に使用」が利用できない</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">統計情報にクライアントを表示</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">統計情報には現在のクライアントが表示されます</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">統計情報には現在のクライアントは表示されません</string>
         </patch>
     </app>
     <app id="music">

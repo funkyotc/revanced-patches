@@ -1746,12 +1746,8 @@ Die Videowiedergabe mit AV1 kann stottern oder Bilder überspringen."</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Audiotrack-Menü fehlt</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Kein AV1-Videocodec</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Stabile Lautstärke ist nicht verfügbar</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Kinder-Videos werden möglicherweise nicht abgespielt, wenn du abgemeldet bist oder den Inkognito-Modus verwendest.</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Originalton erzwingen ist nicht verfügbar</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">In Statistiken für Nerds anzeigen</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Der Client-Typ wird in den Statistiken für Nerds angezeigt</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Der Client wird in den Statistiken für Nerds ausgeblendet</string>
         </patch>
     </app>
     <app id="music">

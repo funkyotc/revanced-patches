@@ -307,7 +307,7 @@ public class SpoofVideoStreamsPatch {
      */
     public static String appendSpoofedClient(String videoFormat) {
         try {
-            if (SPOOF_STREAMING_DATA && BaseSettings.SPOOF_STREAMING_DATA_STATS_FOR_NERDS.get()
+            if (SPOOF_STREAMING_DATA && BaseSettings.SPOOF_VIDEO_STREAMS_STATS_FOR_NERDS.get()
                     && !TextUtils.isEmpty(videoFormat)) {
                 // Force LTR layout, to match the same LTR video time/length layout YouTube uses for all languages.
                 return "\u202D" + videoFormat + "\u2009(" // u202D = left to right override

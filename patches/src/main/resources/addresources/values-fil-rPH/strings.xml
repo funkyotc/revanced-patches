@@ -1732,12 +1732,8 @@ Maaaring mag-stutter o mag-drop ng frames ang pag-playback ng video na may AV1."
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Nawawala ang menu ng audio track</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Walang AV1 video codec</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Hindi available ang stable volume</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Mga video ng mga bata ay maaaring hindi ma-play kapag naka-log out o nasa incognito mode</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Ang Pilitin ang orihinal na audio ay hindi magagamit</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Ipakita sa Mga Istatistika para sa mga nerds</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Ipinapakita ang uri ng kliyente sa Mga Istatistika para sa mga nerds</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Nakatago ang kliyente sa Mga Istatistika para sa mga nerds</string>
         </patch>
     </app>
     <app id="music">

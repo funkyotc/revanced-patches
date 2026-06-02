@@ -1792,12 +1792,8 @@ AV1 視訊播放可能會卡頓或丟格。"</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• 音軌選單遺失</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• 沒有 AV1 影片解碼器</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• 無法使用平衡音量</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• 在登出或無痕模式下，兒童影片可能無法播放</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• 強制原始音訊不可用</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">顯示統計資料</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">已在統計資料中顯示用戶端類型</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">已在統計資料中隱藏用戶端類型</string>
         </patch>
     </app>
     <app id="music">

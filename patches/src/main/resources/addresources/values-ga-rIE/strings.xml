@@ -1786,12 +1786,8 @@ D’fhéadfadh sé go mbeadh stad nó go gcaillfí frámaí ag athsheinm físe l
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Tá an roghchlár rian fuaime in easnamh</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Níl aon cóideac físe AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Níl toirt chobhsaí ar fáil</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Seans nach seinnfear físeáin do pháistí nuair a bhíonn siad logáilte amach nó i mód go hanaithnid</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Níl an fuaim bhunaidh iallach ar fáil</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Taispeáin i Staitisticí do nerds</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Taispeántar cineál an chliaint i Staitisticí do nerds</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Tá an cliant curtha i bhfolach i Staitisticí do nerds</string>
         </patch>
     </app>
     <app id="music">

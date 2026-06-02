@@ -1768,12 +1768,8 @@ AV1 video atskaņošana var raustīties vai izlaist kadrus."</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Trūkst audio celiņa izvēlnes</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Nav pieejams AV1 video kodeks</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Nav pieejams stabils skaļums</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Bērnu videoklipi var netikt atskaņoti, kad esat izrakstījies vai inkognito režīmā.</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Piespiest oriģinālo skaņu nav pieejams</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Rādīt statistiskos datos entuziastiem</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Klienta tips tiek rādīts statistiskos datos entuziastiem</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Klients ir paslēpts statistiskos datos entuziastiem</string>
         </patch>
     </app>
     <app id="music">

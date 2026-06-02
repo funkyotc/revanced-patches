@@ -1787,12 +1787,8 @@ Second \"item\" text"</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Мени „Аудио снимак” недостаје</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Нема видео кодека AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Опција „Уједначена јачина звука” није доступна</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Видеи за децу се можда неће пуштати када сте одјављени или у режиму без архивирања</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Присиљавање оригиналног звука није доступно</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Прикажи у „Статистици за зналце”</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Тип клијента је приказан у „Статистици за зналце”</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Тип клијента је скривен у „Статистици за зналце”</string>
         </patch>
     </app>
     <app id="music">

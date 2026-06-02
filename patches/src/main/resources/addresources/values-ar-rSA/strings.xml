@@ -1776,12 +1776,8 @@ Second \"item\" text"</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• قائمة المقطع الصوتي مفقودة</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• لا يوجد ترميز الفيديو AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• مستوى الصوت الثابت غير متاح</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• قد لا يتم تشغيل الفيديوهات المخصصة للأطفال عند تسجيل الخروج أو عند استخدام وضع التصفح المتخفي</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• فرض الصوت الأصلي غير متاح</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">عرض في إحصاءات تقنية</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">يتم عرض نوع العميل في إحصاءات تقنية</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">تم إخفاء نوع العميل في إحصاءات تقنية</string>
         </patch>
     </app>
     <app id="music">

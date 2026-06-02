@@ -1783,12 +1783,8 @@ Predvajanje videa z AV1 se lahko zatika ali izpušča sličice."</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Meni z zvočnimi posnetki manjka</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Brez kodeka videa AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Stabilna glasnost ni na voljo</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Posnetki za otroke se mogoče ne bodo predvajali, ko ste odjavljeni ali v načinu brez beleženja zgodovine</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Vsili izvirni zvok ni na voljo</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Pokaži v statistiki za piflarje</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Vrsta odjemalca je prikazana v statistiki za piflarje</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Odjemalec je skrit v statistiki za piflarje</string>
         </patch>
     </app>
     <app id="music">

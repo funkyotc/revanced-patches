@@ -1784,12 +1784,8 @@ Odtwarzanie wideo z AV1 może powodować zacinanie się lub gubienie klatek."</s
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Brakuje menu ścieżek audio</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Žádný video kodek AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Stabilna głośność nie jest dostępna</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Filmy dla dzieci mogą nie być odtwarzane po wylogowaniu lub w trybie incognito</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Wymuś oryginalny dźwięk jest niedostępny</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Pokaż w statystykach dla nerdów</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Typ klienta jest wyświetlany w Statystykach dla nerdów</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Klient jest ukryty w statystykach dla nerdów</string>
         </patch>
     </app>
     <app id="music">

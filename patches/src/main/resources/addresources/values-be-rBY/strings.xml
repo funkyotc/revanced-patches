@@ -1762,12 +1762,8 @@ Second \"item\" text"</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Меню аўдыядарожкі адсутнічае</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Няма відэакідавання AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Стабільная гучнасць недаступная</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Дзіцячыя відэа могуць не прайгравацца ў стане выхаду з акаўнта або ў рэжыме інкогніта</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Прымусовы арыгінальны аўдыё недаступны</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Паказаць у статыстыцы для спецыялістаў</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Тып кліента адлюстроўваецца ў статыстыцы для спецыялістаў</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Кліент схаваны ў статыстыцы для спецыялістаў</string>
         </patch>
     </app>
     <app id="music">

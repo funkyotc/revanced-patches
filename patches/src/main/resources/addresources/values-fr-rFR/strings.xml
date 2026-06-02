@@ -1787,12 +1787,8 @@ La lecture vidéo avec AV1 peut être saccadée et des images peuvent être perd
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Le menu Piste audio est absent</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Codec vidéo AV1 indisponible</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Le volume stable n\'est pas disponible</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• La lecture des vidéos pour enfants peut ne pas fonctionner lorsque vous êtes déconnecté ou en mode navigation privée</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Forcer la langue audio d\'origine n\'est pas disponible</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Afficher dans les Statistiques avancées</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Le type de client est affiché dans les Statistiques avancées</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Le client est masqué dans les Statistiques avancées</string>
         </patch>
     </app>
     <app id="music">

@@ -1774,12 +1774,8 @@ La reproducción puede tartamudear o perder fotogramas"</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Falta el menú de la pista de audio</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Sin códec de vídeo AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Volumen estable no disponible</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Es posible que los vídeos infantiles no se reproduzcan cuando se cierra la sesión o se está en modo incógnito</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Forzar audio original no está disponible</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Mostrar en Estadísticas para nerds</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">El tipo de cliente se muestra en Estadísticas para nerds</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">El cliente está oculto en Estadísticas para nerds</string>
         </patch>
     </app>
     <app id="music">

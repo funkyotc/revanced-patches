@@ -1733,12 +1733,8 @@ Redarea video cu AV1 poate sacada sau pierde cadre."</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Meniul pistei audio lipsește</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Fara codec video AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Volumul stabil nu este disponibil</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Copiii nu pot urmări videoclipuri atunci când sunt deconectați sau în modul incognito</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Forțarea sunetului original nu este disponibilă</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Afișează în Statistici pentru pasionați</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Tipul clientului este afișat în Statistici pentru pasionați</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Clientul este ascuns în Statistici pentru pasionați</string>
         </patch>
     </app>
     <app id="music">

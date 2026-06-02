@@ -1755,12 +1755,8 @@ A reprodução de vídeo com AV1 pode gaguejar ou perder quadros."</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• O menu da faixa de áudio está faltando</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Sem codec de vídeo AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Volume estável não está disponível</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Vídeos infantis podem não ser reproduzidos quando estiver desconectado ou no modo de navegação anônima</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Forçar áudio original não está disponível</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Mostrar em Estatísticas para nerds</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">O tipo de cliente é mostrado em Estatísticas para nerds</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">O cliente está oculto em Estatísticas para nerds</string>
         </patch>
     </app>
     <app id="music">

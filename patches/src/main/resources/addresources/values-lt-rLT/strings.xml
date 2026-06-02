@@ -1762,12 +1762,8 @@ Vaizdo įrašo atkūrimas su AV1 gali strigti arba praleisti kadrus."</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Trūksta garso takelio meniu</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Nėra AV1 vaizdo kodeko</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Stabili garso apimtis nepasiekiama</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Vaikų vaizdo įrašai gali būti neatkuriami, kai atsijungiama arba naudojamas inkognito režimas</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Priverstinai naudoti originalų garsą nepasiekiama</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Rodyti statistinėje informacijoje \"tik profesionalams\"</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Kliento tipas rodomas statistinėje informacijoje \"tik profesionalams\"</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Klientas paslėptas statistinėje informacijoje \"tik profesionalams\"</string>
         </patch>
     </app>
     <app id="music">

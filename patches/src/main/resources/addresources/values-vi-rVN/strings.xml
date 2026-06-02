@@ -1787,12 +1787,8 @@ Phát video bằng AV1 có thể bị giật hoặc tụt khung hình."</string>
             <string name="revanced_spoof_video_streams_about_no_audio_tracks">• Trình đơn bản âm thanh bị thiếu</string>
             <string name="revanced_spoof_video_streams_about_no_av1">• Không có codec video AV1</string>
             <string name="revanced_spoof_video_streams_about_no_stable_volume">• Âm lượng ổn định không khả dụng</string>
-            <string name="revanced_spoof_video_streams_about_kids_videos">• Video dành cho trẻ em có thể không phát được khi đăng xuất hoặc ở chế độ ẩn danh</string>
             <!-- "Force original audio" should use the same text as revanced_force_original_audio_title -->
             <string name="revanced_spoof_video_streams_about_no_force_original_audio">• Buộc âm thanh gốc không khả dụng</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_title">Hiện trong Thống kê chi tiết</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_on">Ứng dụng khách đã được hiển thị trong Thống kê chi tiết</string>
-            <string name="revanced_spoof_streaming_data_stats_for_nerds_summary_off">Ứng dụng khách đã ẩn trong Thống kê chi tiết</string>
         </patch>
     </app>
     <app id="music">
