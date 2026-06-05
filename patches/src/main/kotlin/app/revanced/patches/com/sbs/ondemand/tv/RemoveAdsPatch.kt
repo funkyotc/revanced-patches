@@ -2,7 +2,7 @@ package app.revanced.patches.com.sbs.ondemand.tv
 
 import app.revanced.patcher.extensions.addInstructions
 import app.revanced.patcher.patch.bytecodePatch
-import app.revanced.patches.shared.misc.pairip.license.disablePairipLicenseCheckPatch
+import app.revanced.patches.shared.misc.pairip.license.disablePairIPLicenseCheckPatch
 import app.revanced.util.returnEarly
 
 @Suppress("unused")
@@ -12,7 +12,7 @@ val removeAdsPatch = bytecodePatch(
 ) {
     compatibleWith("com.sbs.ondemand.tv")
 
-    dependsOn(disablePairipLicenseCheckPatch)
+    dependsOn(disablePairIPLicenseCheckPatch)
 
     apply {
         shouldShowAdvertisingTVMethod.returnEarly(true)
