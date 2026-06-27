@@ -64,9 +64,10 @@ val customBrandingPatch = baseCustomBrandingPatch(
     mainActivityName = MUSIC_MAIN_ACTIVITY_NAME,
     activityAliasNameWithIntents = MUSIC_MAIN_ACTIVITY_NAME,
     preferenceScreen = PreferenceScreen.GENERAL,
+    sharedExtensionPatch = sharedExtensionPatch,
 
     block = {
-        dependsOn(sharedExtensionPatch, disableSplashAnimationPatch)
+        dependsOn(disableSplashAnimationPatch)
 
         compatibleWith(
             "com.google.android.apps.youtube.music"(
