@@ -12,6 +12,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// https://raw.githubusercontent.com/Dr-TSNG/TwiFucker/880cdf1c1622e54ab45561ffcb4f53d94ed97bae/app/src/main/java/icu/nullptr/twifucker/hook/JsonHook.kt
 public final class TwiFucker {
     public static final TwiFucker INSTANCE = new TwiFucker();
 
@@ -62,11 +63,11 @@ public final class TwiFucker {
                 .orElse(null);
     }
 
-    private void dataCheckAndRemove(@NotNull JSONObject json) {
+    private void dataCheckAndRemove(@NotNull JSONObject json, Consumer<JSONArray> action) {
         Optional.ofNullable(dataGetInstructions(json))
                 .ifPresent(instructions ->
                         TwiFuckerUtils.INSTANCE.forEach(instructions, instruction ->
-                                instructionCheckAndRemove(instruction, this::entriesRemoveAnnoyance)
+                                instructionCheckAndRemove(instruction, action)
                         )
                 );
     }
@@ -258,12 +259,13 @@ public final class TwiFucker {
 
     public void hideRecommendedUsers(@NotNull JSONObject json) {
         filterInstructions(json, this::entriesRemoveWhoToFollow);
+        Optional.ofNullable(jsonGetData(json)).ifPresent(data -> dataCheckAndRemove(data, this::entriesRemoveWhoToFollow));
         jsonCheckAndRemoveRecommendedUsers(json);
     }
 
     public void hidePromotedAds(@NotNull JSONObject json) {
         filterInstructions(json, this::entriesRemoveAnnoyance);
-        Optional.ofNullable(jsonGetData(json)).ifPresent(this::dataCheckAndRemove);
+        Optional.ofNullable(jsonGetData(json)).ifPresent(data -> dataCheckAndRemove(data, this::entriesRemoveAnnoyance));
     }
 
     private void filterInstructions(@NotNull JSONObject json, Consumer<JSONArray> action) {
