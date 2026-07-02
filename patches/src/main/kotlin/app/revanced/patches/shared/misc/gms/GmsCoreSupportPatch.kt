@@ -174,6 +174,10 @@ fun gmsCoreSupportPatch(
         // Google Play Utility is not present in all apps, so we need to check if it's present.
         googlePlayUtilityMethod?.returnEarly(0)
 
+        // Returns an int ConnectionResult status code (0 == SUCCESS), not a boolean, so returning 0
+        // reports Play Services as available. Some bundled Maps SDKs (e.g. Google Photos) gate on it.
+        isGooglePlayServicesAvailableMethod?.returnEarly()
+
         // Set original and patched package names for extension to use.
         originalPackageNameExtensionMethod.returnEarly(fromPackageName)
 
