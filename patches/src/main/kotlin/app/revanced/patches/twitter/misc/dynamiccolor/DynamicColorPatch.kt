@@ -1,9 +1,37 @@
 package app.revanced.patches.twitter.misc.dynamiccolor
 
+import app.revanced.patcher.extensions.addInstructions
 import app.revanced.patcher.patch.PatchException
+import app.revanced.patcher.patch.bytecodePatch
 import app.revanced.patcher.patch.resourcePatch
+import app.revanced.patches.twitter.misc.extension.sharedExtensionPatch
 import java.io.FileWriter
 import java.nio.file.Files
+
+private const val EXTENSION_CLASS_DESCRIPTOR = "Lapp/revanced/extension/twitter/patches/misc/DynamicColorPatch;"
+
+@Suppress("unused")
+private val dynamicColorBytecodePatch = bytecodePatch {
+    compatibleWith(
+        "com.twitter.android"(
+            "12.8.0-release.0",
+            "12.10.0-release.0",
+        ),
+    )
+
+    dependsOn(sharedExtensionPatch)
+
+    apply {
+        // Replace the default X (Formerly Twitter) Blue with the user's Material You palette.
+        designTokenMethodMatch.method.addInstructions(
+            designTokenMethodMatch[0] + 1,
+            """
+                invoke-static { v0, v1 }, $EXTENSION_CLASS_DESCRIPTOR->getDynamicColor(J)J
+                move-result-wide v0
+            """
+        )
+    }
+}
 
 @Suppress("unused")
 val dynamicColorPatch = resourcePatch(
@@ -12,11 +40,13 @@ val dynamicColorPatch = resourcePatch(
 ) {
     compatibleWith(
         "com.twitter.android"(
-            "10.60.0-release.0",
-            "10.86.0-release.0",
             "11.80.0-release.0",
+            "12.8.0-release.0",
+            "12.10.0-release.0",
         ),
     )
+
+    dependsOn(dynamicColorBytecodePatch)
 
     apply {
         val resDirectory = get("res")

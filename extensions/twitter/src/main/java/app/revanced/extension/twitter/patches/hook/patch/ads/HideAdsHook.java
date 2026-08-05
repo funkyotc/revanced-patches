@@ -1,7 +1,7 @@
 package app.revanced.extension.twitter.patches.hook.patch.ads;
 
 import app.revanced.extension.twitter.patches.hook.json.BaseJsonHook;
-import app.revanced.extension.twitter.patches.hook.twifucker.TwiFucker;
+import app.revanced.extension.twitter.patches.hook.json.JsonParser;
 import org.json.JSONObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,6 +16,6 @@ public final class HideAdsHook extends BaseJsonHook {
 
     @Override
     public void apply(@NotNull JSONObject json) {
-        TwiFucker.INSTANCE.hidePromotedAds(json);
+        JsonParser.INSTANCE.hidePromotedMetadata(json);
     }
 }

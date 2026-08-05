@@ -7,6 +7,7 @@ import app.revanced.patcher.patch.BytecodePatchContext
 import app.revanced.patcher.patch.PatchException
 import app.revanced.patcher.patch.bytecodePatch
 import app.revanced.patches.twitter.misc.extension.sharedExtensionPatch
+import app.revanced.patches.twitter.misc.hook.okhttp.customNetworkInterceptor
 import java.io.InvalidClassException
 
 /**
@@ -27,7 +28,7 @@ fun BytecodePatchContext.addJsonHook(
         addIndex + 1,
         """
             sget-object v1, ${jsonHook.descriptor}->INSTANCE:${jsonHook.descriptor}
-            invoke-interface {v0, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+            invoke-interface { v0, v1 }, Ljava/util/List;->add(Ljava/lang/Object;)Z
         """,
     )
 
@@ -42,7 +43,10 @@ private const val JSON_HOOK_CLASS_DESCRIPTOR = "L$JSON_HOOK_CLASS_NAMESPACE/$BAS
 val jsonHookPatch = bytecodePatch(
     description = "Hooks the stream which reads JSON responses.",
 ) {
-    dependsOn(sharedExtensionPatch)
+    dependsOn(
+        sharedExtensionPatch,
+        customNetworkInterceptor
+    )
 
     apply {
         jsonHookPatchMethodMatch.methodOrNull

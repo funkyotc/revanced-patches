@@ -1,5 +1,6 @@
 package app.revanced.extension.twitter.patches.hook.json;
 
+import android.util.Log;
 import app.revanced.extension.twitter.patches.hook.patch.dummy.DummyHook;
 import app.revanced.extension.twitter.utils.json.JsonUtils;
 import app.revanced.extension.twitter.utils.stream.StreamUtils;
