@@ -2,26 +2,27 @@ package app.revanced.patches.twitter.misc.links
 
 import app.revanced.patcher.extensions.addInstructions
 import app.revanced.patcher.extensions.getInstruction
-import app.revanced.patcher.extensions.replaceInstruction
+import app.revanced.patcher.patch.booleanOption
 import app.revanced.patcher.patch.bytecodePatch
 import app.revanced.patcher.patch.stringOption
 import app.revanced.patches.twitter.misc.extension.sharedExtensionPatch
-import app.revanced.util.indexOfFirstInstructionOrThrow
 import app.revanced.util.returnEarly
-import com.android.tools.smali.dexlib2.Opcode
-import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.TwoRegisterInstruction
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.util.logging.Logger
 
-internal const val EXTENSION_CLASS_DESCRIPTOR = "Lapp/revanced/extension/twitter/patches/links/ChangeLinkSharingDomainPatch;"
+internal const val EXTENSION_CLASS_DESCRIPTOR = "Lapp/revanced/extension/twitter/patches/links/CustomizeSharingLinkPatch;"
 
 internal val domainNameOption = stringOption(
-    default = "fxtwitter.com",
+    default = "x.com",
     name = "Domain name",
     description = "The domain name to use when sharing links.",
+    values = mapOf(
+        "Default" to "x.com",
+        "FxTwitter" to "fxtwitter.com",
+    ),
     required = true,
 ) {
     // Do a courtesy check if the host can be resolved.
@@ -42,72 +43,35 @@ internal val domainNameOption = stringOption(
     true
 }
 
-// TODO restore this once Manager uses a fixed version of Patcher
-/*
-internal val changeLinkSharingDomainResourcePatch = resourcePatch {
-    apply {
-        val domainName = domainNameOption.value!!
-
-        val shareLinkTemplate = "https://$domainName/%1\$s/status/%2\$s"
-
-        document("res/values/strings.xml").use { document ->
-            document.documentElement.childNodes.findElementByAttributeValueOrThrow(
-                "name",
-                "tweet_share_link"
-            ).textContent = shareLinkTemplate
-        }
-    }
-}
-*/
-
 @Suppress("unused")
-val changeLinkSharingDomainPatch = bytecodePatch(
-    name = "Change link sharing domain",
-    description = "Replaces the domain name of shared links. Using this patch can prevent making posts that quote other posts.",
-    use = false,
+val customizeSharingLinkPatch = bytecodePatch(
+    name = "Customize sharing link",
+    description = "Changes the domain name used when sharing links.",
 ) {
-    dependsOn(
-        sharedExtensionPatch,
-    )
+    dependsOn(sharedExtensionPatch)
 
     compatibleWith(
         "com.twitter.android"(
             "11.80.0-release.0",
+            "12.8.0-release.0",
+            "12.10.0-release.0",
         ),
+    )
+
+    val returnUsername by booleanOption(
+        default = true,
+        name = "Return username",
+        description = "Whether to return the username in the link.",
     )
 
     val domainName by domainNameOption()
 
     apply {
+        // Replace the isReturnUsernameEnabled in the link sharing extension methods.
+        returnUsernameHelperMethod.returnEarly(returnUsername!!)
+
         // Replace the domain name in the link sharing extension methods.
         linkSharingDomainHelperMethod.returnEarly(domainName!!)
-
-        // Replace the domain name when copying a link with "Copy link" button.
-        linkBuilderMethod.addInstructions(
-            0,
-            """
-                invoke-static { p0, p1, p2 }, $EXTENSION_CLASS_DESCRIPTOR->formatLink(JLjava/lang/String;)Ljava/lang/String;
-                move-result-object p0
-                return-object p0
-            """,
-        )
-
-        // TODO remove this once changeLinkSharingDomainResourcePatch is restored
-        // Replace the domain name in the "Share via..." dialog.
-        linkResourceGetterMethod.apply {
-            val templateIdConstIndex = indexOfFirstInstructionOrThrow(Opcode.CONST)
-
-            // Format the link with the new domain name register (1 instruction below the const).
-            val formatLinkCallIndex = templateIdConstIndex + 1
-            val register = getInstruction<FiveRegisterInstruction>(formatLinkCallIndex).registerE
-
-            // Replace the original method call with the new method call.
-            replaceInstruction(
-                formatLinkCallIndex,
-                "invoke-static { v$register }, $EXTENSION_CLASS_DESCRIPTOR->" +
-                    "formatResourceLink([Ljava/lang/Object;)Ljava/lang/String;",
-            )
-        }
 
         // Formats share link such as sharing through XChat.
         linkInternalShareSheetMethodMatch.let {
@@ -121,9 +85,9 @@ val changeLinkSharingDomainPatch = bytecodePatch(
                 addInstructions(
                     contextualPostIndex + 1,
                     """
-                    invoke-static { v$contextualPostRegister }, $EXTENSION_CLASS_DESCRIPTOR->formatInternalShareSheetLink(Ljava/lang/Object;)Ljava/lang/String;
-                    move-result-object v$statusStringRegister
-                """
+                        invoke-static/range { v$contextualPostRegister .. v$contextualPostRegister }, $EXTENSION_CLASS_DESCRIPTOR->formatInternalShareSheetLink(Ljava/lang/Object;)Ljava/lang/String;
+                        move-result-object v$statusStringRegister
+                    """
                 )
             }
         }
@@ -140,8 +104,8 @@ val changeLinkSharingDomainPatch = bytecodePatch(
                 addInstructions(
                     statusStringIndex + 1,
                     """
-                    invoke-static { v$rootContextualPostRegister }, $EXTENSION_CLASS_DESCRIPTOR->formatExternalShareSheetLink(Ljava/lang/Object;)Ljava/lang/String;
-                    move-result-object v$statusStringRegister
+                        invoke-static/range { v$rootContextualPostRegister .. v$rootContextualPostRegister }, $EXTENSION_CLASS_DESCRIPTOR->formatExternalShareSheetLink(Ljava/lang/Object;)Ljava/lang/String;
+                        move-result-object v$statusStringRegister
                     """
                 )
             }

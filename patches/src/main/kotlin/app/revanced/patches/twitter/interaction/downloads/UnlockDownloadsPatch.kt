@@ -1,61 +1,62 @@
 package app.revanced.patches.twitter.interaction.downloads
 
-import app.revanced.patcher.CompositeMatch
 import app.revanced.patcher.extensions.*
 import app.revanced.patcher.patch.bytecodePatch
-import com.android.tools.smali.dexlib2.Opcode
+import app.revanced.util.returnEarly
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
-import com.android.tools.smali.dexlib2.iface.instruction.TwoRegisterInstruction
 
 @Suppress("unused")
 val unlockDownloadsPatch = bytecodePatch(
     name = "Unlock downloads",
     description = "Unlocks the ability to download any video. GIFs can be downloaded via the menu on long press.",
 ) {
-    compatibleWith("com.twitter.android")
+    compatibleWith(
+        "com.twitter.android"(
+            "12.8.0-release.0",
+            "12.10.0-release.0",
+        )
+    )
 
     apply {
-        fun CompositeMatch.patch(getRegisterAndIndex: CompositeMatch.() -> Pair<Int, Int>) {
-            val (index, register) = getRegisterAndIndex()
-            method.addInstruction(index, "const/4 v$register, 0x1")
-        }
+        /**
+         * Allow downloads for non-premium users.
+         * Return early makes the method return true for all users.
+         * This method returns a boolean value that indicates whether the user can download the video of subscriptionsFeatures Interface.
+         *
+         * X has two identical methods, one without "legacy" and one with "legacy".
+         * Don't know what legacy actually does, but it's patched anyway.
+         */
+        val subscriptionsFeaturesDefiningClass = subscriptionsFeaturesMethodMatch.definingClass.substringBefore("$") + ";"
+        getCanDownloadVideoMethodMatch(subscriptionsFeaturesDefiningClass, false).method.returnEarly(true)
+        getCanDownloadVideoMethodMatch(subscriptionsFeaturesDefiningClass, true).method.returnEarly(true)
 
-        // Allow downloads for non-premium users.
-        showDownloadVideoUpsellBottomSheetMethodMatch.patch {
-            val checkIndex = showDownloadVideoUpsellBottomSheetMethodMatch[0]
-            val register = method.getInstruction<OneRegisterInstruction>(checkIndex).registerA
-
-            checkIndex to register
-        }
-
-        // Force show the download menu item.
-        constructMediaOptionsSheetMethodMatch.patch {
-            val showDownloadButtonIndex = method.instructions.lastIndex - 1
-            val register = method.getInstruction<TwoRegisterInstruction>(showDownloadButtonIndex).registerA
-
-            showDownloadButtonIndex to register
-        }
-
-        // Make GIFs downloadable.
-        buildMediaOptionsSheetMethodMatch.let {
+        // Some media videos have different download button that directly uses subscriptionsFeatures.
+        getMediaGalleryDownloadMethodMatch(subscriptionsFeaturesDefiningClass).let {
             it.method.apply {
-                val checkMediaTypeIndex = it[0]
-                val checkMediaTypeInstruction = getInstruction<TwoRegisterInstruction>(checkMediaTypeIndex)
+                listOf(
+                    0 to false, // Don't fall back to offline video.
+                    2 to true, // Make user can download video.
+                ).forEach { (index, boolean) ->
+                    val canUserDownloadVideoIndex = it[index] + 1
+                    val canUserDownloadVideoRegister = getInstruction<OneRegisterInstruction>(canUserDownloadVideoIndex).registerA
+                    val bit = if (boolean) 1 else 0
+                    replaceInstruction(canUserDownloadVideoIndex, "const/4 v$canUserDownloadVideoRegister, 0x$bit")
+                }
+            }
+        }
 
-                // Treat GIFs as videos.
-                addInstructionsWithLabels(
-                    checkMediaTypeIndex + 1,
-                    """
-                        const/4 v${checkMediaTypeInstruction.registerB}, 0x2 # GIF
-                        if-eq v${checkMediaTypeInstruction.registerA}, v${checkMediaTypeInstruction.registerB}, :video
-                    """,
-                    ExternalLabel("video", getInstruction(it[-1])),
-                )
+        // Download action for long-press download button.
+        getPostMediaActionMethodMatch(subscriptionsFeaturesDefiningClass).let {
+            it.method.apply {
+                // Create download button for GIF.
+                val isDownloadableIndex = it[8] + 1
+                val isDownloadableRegister = getInstruction<OneRegisterInstruction>(isDownloadableIndex).registerA
+                replaceInstruction(isDownloadableIndex, "const/4 v$isDownloadableRegister, 0x1")
 
-                // Remove media.isDownloadable check.
-                removeInstruction(
-                    instructions.first { it.opcode == Opcode.IGET_BOOLEAN }.location.index + 1,
-                )
+                // Replace the boolean that blocks non-premium users from download.
+                val canUserDownloadVideoIndex = it[-1] + 1
+                val canUserDownloadVideoRegister = getInstruction<OneRegisterInstruction>(canUserDownloadVideoIndex).registerA
+                replaceInstruction(canUserDownloadVideoIndex, "const/4 v$canUserDownloadVideoRegister, 0x1")
             }
         }
     }

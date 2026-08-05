@@ -1,10 +1,11 @@
 package app.revanced.extension.twitter.patches.links;
 
+import android.util.Log;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 @SuppressWarnings("unused")
-public final class ChangeLinkSharingDomainPatch {
+public final class CustomizeSharingLinkPatch {
     private static final String LINK_FORMAT = "https://%s/%s/status/%s";
 
     /**
@@ -14,21 +15,8 @@ public final class ChangeLinkSharingDomainPatch {
         return "";
     }
 
-    // TODO remove this once changeLinkSharingDomainResourcePatch is restored
-    /**
-     * Injection point.
-     */
-    public static String formatResourceLink(Object... formatArgs) {
-        String username = (String) formatArgs[0];
-        String tweetId = (String) formatArgs[1];
-        return String.format(LINK_FORMAT, getShareDomain(), username, tweetId);
-    }
-
-    /**
-     * Injection point.
-     */
-    public static String formatLink(long tweetId, String username) {
-        return String.format(LINK_FORMAT, getShareDomain(), username, tweetId);
+    private static boolean isReturnUsernameEnabled() {
+        return false;
     }
 
     /**
@@ -42,11 +30,17 @@ public final class ChangeLinkSharingDomainPatch {
             if (contextualPost == null) {
                 return "https://x.com/i/status/";
             }
-            Object canonicalPost = ReflectionHelper.invoke(contextualPost, "getCanonicalPost");
-            Object userResult = ReflectionHelper.invoke(canonicalPost, "getAuthor");
-            String username = (String) ReflectionHelper.invoke(userResult, "getScreenName");
+            String username = "i";
 
-            if (username == null || username.isEmpty()) username = "i";
+            if (isReturnUsernameEnabled()) {
+                Object canonicalPost = ReflectionHelper.invoke(contextualPost, "getCanonicalPost");
+                Object userResult = ReflectionHelper.invoke(canonicalPost, "getAuthor");
+                String fetchedUsername = (String) ReflectionHelper.invoke(userResult, "getScreenName");
+
+                if (fetchedUsername != null && !fetchedUsername.isEmpty()) {
+                    username = fetchedUsername;
+                }
+            }
 
             return String.format(LINK_FORMAT, getShareDomain(), username, "");
         } catch (Exception e) {
