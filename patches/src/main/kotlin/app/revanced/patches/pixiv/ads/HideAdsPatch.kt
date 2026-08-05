@@ -5,7 +5,12 @@ import app.revanced.util.returnEarly
 
 @Suppress("unused")
 val hideAdsPatch = bytecodePatch("Hide ads") {
-    compatibleWith("jp.pxv.android"("6.141.1"))
+    compatibleWith(
+        "jp.pxv.android"(
+            "6.188.0",
+            "6.191.1"
+        ),
+    )
 
     apply {
         shouldShowAdsMethod.returnEarly(false)
