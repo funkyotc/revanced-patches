@@ -1,11 +1,7 @@
 package app.revanced.patches.kleinanzeigen.ads
 
-import app.revanced.patcher.definingClass
 import app.revanced.patcher.gettingFirstMethodDeclaratively
-import app.revanced.patcher.name
 import app.revanced.patcher.patch.BytecodePatchContext
+import app.revanced.patcher.strings
 
-internal val BytecodePatchContext.getLibertyInitMethod by gettingFirstMethodDeclaratively {
-    name("init")
-    definingClass("/Liberty;")
-}
+internal val BytecodePatchContext.getLibertyInitMethod by gettingFirstMethod("KEY_LIBERTY_REFRESH_INTERVAL")
