@@ -7,9 +7,15 @@ import app.revanced.patcher.patch.bytecodePatch
 import app.revanced.patches.all.misc.resources.addResources
 import app.revanced.patches.all.misc.resources.addResourcesPatch
 import app.revanced.patches.shared.misc.settings.preference.SwitchPreference
+import app.revanced.patches.youtube.misc.contexthook.Endpoint
+import app.revanced.patches.youtube.misc.contexthook.addOSNameHook
+import app.revanced.patches.youtube.misc.contexthook.hookClientContextPatch
 import app.revanced.patches.youtube.misc.extension.sharedExtensionPatch
 import app.revanced.patches.youtube.misc.settings.PreferenceScreen
 import app.revanced.patches.youtube.misc.settings.settingsPatch
+
+private const val EXTENSION_CLASS_DESCRIPTOR =
+    "Lapp/revanced/extension/youtube/patches/VideoAdsPatch;"
 
 @Suppress("ObjectPropertyName")
 val videoAdsPatch = bytecodePatch(
@@ -20,6 +26,7 @@ val videoAdsPatch = bytecodePatch(
         sharedExtensionPatch,
         settingsPatch,
         addResourcesPatch,
+        hookClientContextPatch,
     )
 
     compatibleWith(
@@ -40,10 +47,15 @@ val videoAdsPatch = bytecodePatch(
             SwitchPreference("revanced_hide_video_ads"),
         )
 
+        addOSNameHook(
+            Endpoint.REEL,
+            "$EXTENSION_CLASS_DESCRIPTOR->hideShortsAds(Ljava/lang/String;)Ljava/lang/String;",
+        )
+
         loadVideoAdsMethod.addInstructionsWithLabels(
             0,
             """
-                invoke-static { }, Lapp/revanced/extension/youtube/patches/VideoAdsPatch;->shouldShowAds()Z
+                invoke-static { }, $EXTENSION_CLASS_DESCRIPTOR->shouldShowAds()Z
                 move-result v0
                 if-nez v0, :show_video_ads
                 return-void
