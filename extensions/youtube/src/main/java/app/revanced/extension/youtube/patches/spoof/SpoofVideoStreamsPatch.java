@@ -51,6 +51,6 @@ public class SpoofVideoStreamsPatch {
         );
 
         app.revanced.extension.shared.spoof.SpoofVideoStreamsPatch.setClientsToUse(
-                availableClients, client);
+                availableClients, client, true);
     }
 }
