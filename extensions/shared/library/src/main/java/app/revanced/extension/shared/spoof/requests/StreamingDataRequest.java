@@ -15,6 +15,7 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,10 +46,16 @@ import app.revanced.extension.shared.spoof.ClientType;
  */
 public class StreamingDataRequest {
 
-    private static volatile  ClientType[] clientOrderToUse = ClientType.values();
+    private static volatile ClientType[] clientOrderToUse = ClientType.values();
 
-    public static void setClientOrderToUse(List<ClientType> availableClients, ClientType preferredClient) {
+    private static volatile boolean preferMultipleAvcQualities;
+
+    public static void setClientOrderToUse(List<ClientType> availableClients,
+                                           ClientType preferredClient,
+                                           boolean preferMultipleAvcQualities) {
         Objects.requireNonNull(preferredClient);
+
+        StreamingDataRequest.preferMultipleAvcQualities = preferMultipleAvcQualities;
 
         int availableClientSize = availableClients.size();
         if (!availableClients.contains(preferredClient)) {
@@ -283,11 +290,53 @@ public class StreamingDataRequest {
                 return null;
             }
 
+            if (preferMultipleAvcQualities) {
+                responseBuilder.setStreamingData(preferMultipleAvcQualities(streamingData));
+            }
+
             return responseBuilder.build().toByteArray();
         } catch (IOException ex) {
             Logger.printException(() -> "Failed to write player response to buffer array", ex);
             return null;
         }
+    }
+
+    /**
+     * YouTube selects a single codec family before creating its quality model. If a response has
+     * only one VP9 quality, YouTube can select it and hide the quality picker even when AVC has
+     * several qualities. In that specific case, omit VP9 so YouTube uses the complete AVC ladder.
+     */
+    private static StreamingData preferMultipleAvcQualities(StreamingData streamingData) {
+        var avcQualities = new HashSet<String>();
+        var vp9Qualities = new HashSet<String>();
+
+        for (var format : streamingData.getAdaptiveFormatsList()) {
+            String qualityLabel = format.getQualityLabel();
+            if (!isNotEmpty(qualityLabel)) {
+                continue;
+            }
+
+            String mimeType = format.getMimeType();
+            if (mimeType.contains("avc1")) {
+                avcQualities.add(qualityLabel);
+            } else if (mimeType.contains("vp9")) {
+                vp9Qualities.add(qualityLabel);
+            }
+        }
+
+        if (vp9Qualities.size() != 1 || avcQualities.size() <= vp9Qualities.size()) {
+            return streamingData;
+        }
+
+        StreamingData.Builder builder = streamingData.toBuilder().clearAdaptiveFormats();
+        for (var format : streamingData.getAdaptiveFormatsList()) {
+            if (!format.getMimeType().contains("vp9")) {
+                builder.addAdaptiveFormats(format);
+            }
+        }
+
+        Logger.printDebug(() -> "Using AVC quality ladder: " + avcQualities);
+        return builder.build();
     }
 
     public boolean fetchCompleted() {

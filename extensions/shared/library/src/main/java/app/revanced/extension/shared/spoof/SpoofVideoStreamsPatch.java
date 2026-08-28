@@ -60,8 +60,14 @@ public class SpoofVideoStreamsPatch {
     }
 
     public static void setClientsToUse(List<ClientType> availableClients, ClientType client) {
+        setClientsToUse(availableClients, client, false);
+    }
+
+    public static void setClientsToUse(List<ClientType> availableClients,
+                                       ClientType client,
+                                       boolean preferMultipleAvcQualities) {
         preferredClient = Objects.requireNonNull(client);
-        StreamingDataRequest.setClientOrderToUse(availableClients, client);
+        StreamingDataRequest.setClientOrderToUse(availableClients, client, preferMultipleAvcQualities);
     }
 
     public static ClientType getPreferredClient() {
