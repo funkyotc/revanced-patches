@@ -3,6 +3,7 @@ package app.revanced.patches.shared.misc.gms
 import app.revanced.patcher.*
 import app.revanced.patcher.patch.BytecodePatchContext
 import com.android.tools.smali.dexlib2.AccessFlags
+import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.ClassDef
 
 internal val BytecodePatchContext.googlePlayUtilityMethod by gettingFirstMethodDeclarativelyOrNull(
@@ -34,6 +35,16 @@ internal val BytecodePatchContext.serviceCheckMethod by gettingFirstMethodDeclar
     accessFlags(AccessFlags.PUBLIC, AccessFlags.STATIC)
     returnType("V")
     parameterTypes("L", "I")
+}
+
+internal val BytecodePatchContext.gnpRegistrationTargetMethodMatch by composingFirstMethod(
+    "Failed to get android ID.",
+    "Exception reading GServices key.",
+) {
+    instructions(
+        method("getPackageName"),
+        after(Opcode.MOVE_RESULT_OBJECT()),
+    )
 }
 
 internal val BytecodePatchContext.getGmsCoreVendorGroupIdMethod by gettingFirstMethodDeclaratively {

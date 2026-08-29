@@ -166,6 +166,14 @@ fun gmsCoreSupportPatch(
             )
         }
 
+        // GNP registration must use the original package name.
+        gnpRegistrationTargetMethodMatch.let {
+            val method = it.method
+            val resultIndex = it[1]
+            val register = method.getInstruction<OneRegisterInstruction>(resultIndex).registerA
+
+            method.replaceInstruction(resultIndex, "const-string v$register, \"$fromPackageName\"")
+        }
 
         // Return these methods early to prevent the app from crashing.
         getEarlyReturnMethods.forEach { it().returnEarly() }
@@ -239,12 +247,24 @@ fun gmsCoreSupportResourcePatch(
                 }
             }
 
-            document.getElementsByTagName("uses-permission").asSequence().forEach { node ->
-                node.attributes.getNamedItem("android:name").apply {
-                    if (textContent in GMS_PERMISSIONS) {
-                        textContent.replace("com.google", gmsCoreVendorGroupId)
-                    } else if (textContent in APP_PERMISSIONS) {
-                        textContent = textContent.prefixOrReplace(fromPackageName, toPackageName)
+            document.getElementsByTagName("*").asSequence().forEach { node ->
+                val permissionAttributeNames = when (node.nodeName) {
+                    "uses-permission",
+                    "uses-permission-sdk-23",
+                    "uses-permission-sdk-m",
+                        -> arrayOf("android:name")
+                    else -> arrayOf("android:permission", "android:readPermission", "android:writePermission")
+                }
+
+                permissionAttributeNames.forEach { attributeName ->
+                    node.attributes.getNamedItem(attributeName)?.apply {
+                        textContent = when {
+                            textContent in GMS_PERMISSIONS ->
+                                textContent.replace("com.google", gmsCoreVendorGroupId)
+                            attributeName == "android:name" && textContent in APP_PERMISSIONS ->
+                                textContent.prefixOrReplace(fromPackageName, toPackageName)
+                            else -> textContent
+                        }
                     }
                 }
             }
@@ -313,27 +333,113 @@ fun gmsCoreSupportResourcePatch(
 }
 
 private object Constants {
-    val GMS_PERMISSIONS = setOf(
-        "com.google.android.providers.gsf.permission.READ_GSERVICES",
+    // Permissions declared by stock Google Play services in these versions:
+    // 25.04.32, 25.14.62, 25.26.35, 25.35.62, 25.40.31, 25.45.35, 25.49.32,
+    // 26.02.33, 26.04.35, 26.08.33, 26.12.32, 26.15.61, 26.19.34, 26.24.34, 26.25.32, 26.26.34, 26.30.32.
+    private val STOCK_GMS_PERMISSIONS = setOf(
         "com.google.android.c2dm.permission.RECEIVE",
         "com.google.android.c2dm.permission.SEND",
+        "com.google.android.gms.appevents.permission.SEND_APP_IMPORTANCE_UPDATES",
+        "com.google.android.gms.auth.api.phone.permission.SEND",
+        "com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION",
+        "com.google.android.gms.auth.authzen.permission.DEVICE_SYNC_FINISHED",
+        "com.google.android.gms.auth.authzen.permission.GCM_DEVICE_PROXIMITY",
+        "com.google.android.gms.auth.authzen.permission.KEY_REGISTRATION_FINISHED",
+        "com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK",
+        "com.google.android.gms.auth.cryptauth.permission.KEY_CHANGE",
+        "com.google.android.gms.auth.permission.FACE_UNLOCK",
+        "com.google.android.gms.auth.permission.GOOGLE_ACCOUNT_CHANGE",
+        "com.google.android.gms.auth.permission.POST_SIGN_IN_ACCOUNT",
+        "com.google.android.gms.auth.proximity.permission.SMS_CONNECT_SETUP_REQUESTED",
+        "com.google.android.gms.carsetup.DRIVING_MODE_MANAGER",
+        "com.google.android.gms.chimera.permission.CONFIG_CHANGE",
+        "com.google.android.gms.chimera.permission.QUERY_MODULES",
+        "com.google.android.gms.chromesync.permission.CONTENT_PROVIDER_ACCESS",
+        "com.google.android.gms.chromesync.permission.METADATA_UPDATED",
+        "com.google.android.gms.cloudsave.BIND_EVENT_BROADCAST",
+        "com.google.android.gms.common.internal.SHARED_PREFERENCES_PERMISSION",
+        "com.google.android.gms.contextmanager.CONTEXT_MANAGER_RESTARTED_BROADCAST",
+        "com.google.android.gms.dck.permission.DIGITAL_KEY_IN_USE",
+        "com.google.android.gms.dck.permission.DIGITAL_KEY_PRIVILEGED",
+        "com.google.android.gms.dck.permission.DIGITAL_KEY_READ",
+        "com.google.android.gms.dck.permission.DIGITAL_KEY_WRITE",
+        "com.google.android.gms.dck.permission.SE_APPLET_NOTIFICATION",
+        "com.google.android.gms.DRIVE",
+        "com.google.android.gms.dtdi.permission.START_COMPONENTS",
+        "com.google.android.gms.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+        "com.google.android.gms.findmydevice.spot.permission.DEVICE_CHANGES",
+        "com.google.android.gms.fraudprotect.permission.CALL_VALIDATION_SERVICE",
+        "com.google.android.gms.games.permission.NOTIFY_GAME_EVENT",
+        "com.google.android.gms.googlehelp.LAUNCH_SUPPORT_SCREENSHARE",
+        "com.google.android.gms.home.matter.BIND_MATTER_COMMISSIONING_SERVICE",
+        "com.google.android.gms.learning.permission.LAUNCH_IN_APP_PROXY",
+        "com.google.android.gms.locationsharingreporter.periodic.STATUS_UPDATE",
+        "com.google.android.gms.magictether.permission.CLIENT_TETHERING_PREFERENCE_CHANGED",
+        "com.google.android.gms.magictether.permission.CONNECTED_HOST_CHANGED",
+        "com.google.android.gms.magictether.permission.DISABLE_SOFT_AP",
+        "com.google.android.gms.magictether.permission.SCANNED_DEVICE",
+        "com.google.android.gms.matchstick.permission.BROADCAST_LIGHTER_WEB_INFO",
+        "com.google.android.gms.nearby.exposurenotification.EXPOSURE_CALLBACK",
+        "com.google.android.gms.people.permission.contactssync.BACKUP_SYNC_STATE_UPDATE_BROADCAST",
+        "com.google.android.gms.permission.ACCESS_GESTUREEXCHANGE",
+        "com.google.android.gms.permission.ACCESS_MULTIPACKAGE_COMPONENT",
+        "com.google.android.gms.permission.ACCESS_NEARBY_SHARE_API",
+        "com.google.android.gms.permission.ACTIVITY_RECOGNITION",
+        "com.google.android.gms.permission.AD_ID",
+        "com.google.android.gms.permission.AD_ID_NOTIFICATION",
+        "com.google.android.gms.permission.APPINDEXING",
+        "com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE",
+        "com.google.android.gms.permission.BIND_PAYMENTS_CALLBACK_SERVICE",
+        "com.google.android.gms.permission.BIOAUTH_CONSENT",
+        "com.google.android.gms.permission.BROADCAST_TO_GOOGLEHELP",
+        "com.google.android.gms.permission.C2D_MESSAGE",
+        "com.google.android.gms.permission.CAR",
+        "com.google.android.gms.permission.CAR_FUEL",
+        "com.google.android.gms.permission.CAR_MILEAGE",
+        "com.google.android.gms.permission.CAR_SPEED",
+        "com.google.android.gms.permission.CAR_VENDOR_EXTENSION",
+        "com.google.android.gms.permission.CHECKIN_NOW",
+        "com.google.android.gms.permission.CONTACTS_SYNC_DELEGATION",
+        "com.google.android.gms.permission.GOOGLE_PAY",
+        "com.google.android.gms.permission.GRANT_WALLPAPER_PERMISSIONS",
+        "com.google.android.gms.permission.GROWTH",
+        "com.google.android.gms.permission.INJECT_GESTURE_EVENT",
+        "com.google.android.gms.permission.INTERNAL_BROADCAST",
+        "com.google.android.gms.permission.NEARBY_START_DISCOVERER",
+        "com.google.android.gms.permission.PHENOTYPE_OVERRIDE_FLAGS",
+        "com.google.android.gms.permission.PHENOTYPE_UPDATE_BROADCAST",
+        "com.google.android.gms.permission.READ_VALUABLES_IMAGES",
+        "com.google.android.gms.permission.REPORT_TAP",
+        "com.google.android.gms.permission.REQUEST_SCREEN_LOCK_COMPLEXITY",
+        "com.google.android.gms.permission.SAFETY_NET",
+        "com.google.android.gms.permission.SEND_ANDROID_PAY_DATA",
+        "com.google.android.gms.permission.SHOW_PAYMENT_CARD_DETAILS",
+        "com.google.android.gms.permission.SHOW_TRANSACTION_RECEIPT",
+        "com.google.android.gms.permission.SHOW_WARM_WELCOME_TAPANDPAY_APP",
+        "com.google.android.gms.permission.wearable.BUGREPORT_USER_CONSENT",
+        "com.google.android.gms.presencemanager.permission.PRESENCE_MANAGER_UPDATE_BROADCAST",
+        "com.google.android.gms.security.permission.BANK_SCAM_WARNING",
+        "com.google.android.gms.smartdevice.permission.NOTIFY_QUICK_START_STATUS",
+        "com.google.android.gms.time.permission.SEND_TRUSTED_TIME_SIGNAL",
+        "com.google.android.gms.trustagent.framework.model.DATA_ACCESS",
+        "com.google.android.gms.trustagent.framework.model.DATA_CHANGE_NOTIFICATION",
+        "com.google.android.gms.trustagent.permission.TRUSTAGENT_STATE",
+        "com.google.android.gms.vehicle.permission.SHARED_AUTO_SENSOR_DATA",
+        "com.google.android.gms.WRITE_VERIFY_APPS_CONSENT",
         "com.google.android.gtalkservice.permission.GTALK_SERVICE",
+        "com.google.android.providers.gsf.permission.READ_GSERVICES",
+        "com.google.android.providers.gsf.permission.WRITE_GSERVICES",
+        "com.google.android.providers.settings.permission.WRITE_GSETTINGS",
+        "com.google.firebase.auth.api.gms.permission.LAUNCH_FEDERATED_SIGN_IN",
+    )
+
+    val GMS_PERMISSIONS = STOCK_GMS_PERMISSIONS + setOf(
+        "com.google.android.gms.permission.CAR_INFORMATION",
         "com.google.android.googleapps.permission.GOOGLE_AUTH",
         "com.google.android.googleapps.permission.GOOGLE_AUTH.cp",
         "com.google.android.googleapps.permission.GOOGLE_AUTH.local",
         "com.google.android.googleapps.permission.GOOGLE_AUTH.mail",
         "com.google.android.googleapps.permission.GOOGLE_AUTH.writely",
-        "com.google.android.gms.permission.ACTIVITY_RECOGNITION",
-        "com.google.android.gms.permission.AD_ID",
-        "com.google.android.gms.permission.AD_ID_NOTIFICATION",
-        "com.google.android.gms.auth.api.phone.permission.SEND",
-        "com.google.android.gms.permission.CAR_INFORMATION",
-        "com.google.android.gms.permission.CAR_SPEED",
-        "com.google.android.gms.permission.CAR_FUEL",
-        "com.google.android.gms.permission.CAR_MILEAGE",
-        "com.google.android.gms.permission.CAR_VENDOR_EXTENSION",
-        "com.google.android.gms.locationsharingreporter.periodic.STATUS_UPDATE",
-        "com.google.android.gms.auth.permission.GOOGLE_ACCOUNT_CHANGE",
     )
 
     val GMS_AUTHORITIES = setOf(
