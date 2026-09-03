@@ -1871,6 +1871,7 @@ public final class app/revanced/patches/youtube/misc/playservice/VersionCheckPat
 	public static final fun is_21_06_or_greater ()Z
 	public static final fun is_21_07_or_greater ()Z
 	public static final fun is_21_08_or_greater ()Z
+	public static final fun is_21_34_or_greater ()Z
 }
 
 public final class app/revanced/patches/youtube/misc/privacy/SanitizeSharingLinksPatchKt {
