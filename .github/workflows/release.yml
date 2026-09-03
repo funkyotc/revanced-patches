@@ -46,6 +46,7 @@ jobs:
         run: npm install
 
       - name: Import GPG key
+        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -62,6 +63,7 @@ jobs:
 
       - name: Attest
         if: steps.release.outputs.new_release_published == 'true'
+        continue-on-error: true
         uses: actions/attest@v4
         with:
           subject-name: 'ReVanced Patches ${{ steps.release.outputs.new_release_git_tag }}'
