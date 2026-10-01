@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew processStringsForCrowdin
 
       - name: Push strings
-        uses: crowdin/github-action@v2
+        uses: crowdin/github-action@v3
         with:
           config: crowdin.yml
           upload_sources: true
